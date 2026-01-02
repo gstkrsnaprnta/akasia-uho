@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 42,
-  "last_query_at": "2026-01-02T21:33:52.239613",
+  "total_queries": 46,
+  "last_query_at": "2026-01-02T21:39:22.657250",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -131,6 +131,22 @@
     {
       "query": "Berapa lama masa studi S1?",
       "timestamp": "2026-01-02T21:33:52.239635"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-02T21:38:00.280620"
+    },
+    {
+      "query": "Apa sanksi jika melebihi masa studi maksimal?",
+      "timestamp": "2026-01-02T21:38:24.837213"
+    },
+    {
+      "query": "Bagaimana cara mengajukan perpanjangan masa studi?",
+      "timestamp": "2026-01-02T21:38:36.645174"
+    },
+    {
+      "query": "Berapa SKS minimum per semester?",
+      "timestamp": "2026-01-02T21:39:22.657295"
     }
   ],
   "feedback_history": [
