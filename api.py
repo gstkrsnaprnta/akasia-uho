@@ -1,14 +1,14 @@
 """
 ============================================
-AKASIA v1.0 - API Backend Server
+AKASIA v2.2 - API Backend Server
 ============================================
 Asisten Akademik Berbasis AI untuk UHO
 
-File ini berisi:
-- Endpoint API untuk chat (/api/chat)
-- Endpoint untuk upload dokumen (/api/upload)
-- Endpoint untuk manajemen dokumen (/api/documents)
-- Endpoint untuk statistik (/api/stats)
+Features:
+- Chat dengan streaming response
+- Feedback system (👍/👎)
+- Related questions suggestions
+- Document management
 
 Jalankan dengan: python api.py
 Server akan berjalan di http://localhost:8000
@@ -20,19 +20,20 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from rag_engine import RAGEngine
-from typing import List
+from typing import List, Optional
 import uvicorn
 import shutil
 import os
 import json
 import asyncio
 from app import extract_text_from_pdf
+from datetime import datetime
 
 # Inisialisasi FastAPI dengan metadata
 app = FastAPI(
     title="AKASIA API",
     description="Asisten Akademik Berbasis AI untuk Universitas Halu Oleo",
-    version="1.0.0"
+    version="2.2.0"
 )
 
 # Enable CORS
@@ -48,6 +49,12 @@ engine = RAGEngine()
 
 class ChatRequest(BaseModel):
     message: str
+
+class FeedbackRequest(BaseModel):
+    query: str
+    response: str
+    rating: str  # "up" or "down"
+    confidence: Optional[int] = None
 
 @app.get("/api/health")
 async def health_check():
@@ -67,6 +74,57 @@ async def chat(request: ChatRequest):
              yield json.dumps(chunk) + "\n"
 
     return StreamingResponse(generate(), media_type="application/x-ndjson")
+
+@app.post("/api/feedback")
+async def submit_feedback(request: FeedbackRequest):
+    """Submit feedback for a chat response (thumbs up/down)"""
+    try:
+        # Store feedback in metadata
+        if "feedback_history" not in engine.metadata:
+            engine.metadata["feedback_history"] = []
+        
+        feedback_entry = {
+            "query": request.query[:200],  # Limit length
+            "response": request.response[:500],
+            "rating": request.rating,
+            "confidence": request.confidence,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+        engine.metadata["feedback_history"].append(feedback_entry)
+        
+        # Keep only last 500 feedbacks
+        if len(engine.metadata["feedback_history"]) > 500:
+            engine.metadata["feedback_history"] = engine.metadata["feedback_history"][-500:]
+        
+        # Update totals
+        if "feedback_stats" not in engine.metadata:
+            engine.metadata["feedback_stats"] = {"thumbs_up": 0, "thumbs_down": 0}
+        
+        if request.rating == "up":
+            engine.metadata["feedback_stats"]["thumbs_up"] += 1
+        else:
+            engine.metadata["feedback_stats"]["thumbs_down"] += 1
+        
+        engine.save_metadata()
+        
+        return {"status": "success", "message": "Feedback recorded"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/feedback/stats")
+async def get_feedback_stats():
+    """Get feedback statistics"""
+    stats = engine.metadata.get("feedback_stats", {"thumbs_up": 0, "thumbs_down": 0})
+    total = stats["thumbs_up"] + stats["thumbs_down"]
+    
+    return {
+        "thumbs_up": stats["thumbs_up"],
+        "thumbs_down": stats["thumbs_down"],
+        "total": total,
+        "satisfaction_rate": round(stats["thumbs_up"] / max(total, 1) * 100, 1),
+        "recent_feedback": engine.metadata.get("feedback_history", [])[-10:]
+    }
 
 @app.post("/api/upload")
 async def upload_files(files: List[UploadFile] = File(...)):

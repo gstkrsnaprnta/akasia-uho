@@ -885,8 +885,87 @@ Instruksi: Cari jawaban di REFERENSI di atas. Jika ditemukan, jawab SINGKAT deng
             for chunk in stream:
                 if chunk.choices[0].delta.content:
                     yield {"response": chunk.choices[0].delta.content}
+            
+            # v2.2: Generate related questions after response
+            related = self._generate_related_questions(question, reranked_docs)
+            if related:
+                yield {"related_questions": related}
+                
         except Exception as e:
             yield {"response": f"Error: {str(e)}"}
+    
+    def _generate_related_questions(self, question, docs, max_questions=4):
+        """
+        v2.2: Generate related questions based on current query and documents.
+        Uses keywords and document topics to suggest follow-up questions.
+        """
+        question_lower = question.lower()
+        related = []
+        
+        # Define topic-based related questions
+        topic_questions = {
+            "masa studi": [
+                "Apa sanksi jika melebihi masa studi maksimal?",
+                "Bagaimana cara mengajukan perpanjangan masa studi?",
+                "Berapa SKS minimum per semester?"
+            ],
+            "sks": [
+                "Berapa beban SKS maksimal per semester?",
+                "Bagaimana konversi nilai ke huruf?",
+                "Apa syarat mengambil SKS maksimal?"
+            ],
+            "wisuda": [
+                "Kapan jadwal pendaftaran wisuda?",
+                "Apa saja berkas yang diperlukan untuk wisuda?",
+                "Bagaimana cara mengecek status kelulusan?"
+            ],
+            "cuti": [
+                "Berapa lama maksimal cuti akademik?",
+                "Apa saja syarat mengajukan cuti?",
+                "Bagaimana prosedur aktivasi setelah cuti?"
+            ],
+            "ipk": [
+                "Berapa IPK minimum untuk lulus cum laude?",
+                "Bagaimana cara menghitung IPK?",
+                "Apa predikat kelulusan berdasarkan IPK?"
+            ],
+            "krs": [
+                "Kapan jadwal pengisian KRS?",
+                "Bagaimana cara mengubah KRS?",
+                "Berapa batas waktu pembatalan mata kuliah?"
+            ],
+            "jadwal": [
+                "Kapan ujian akhir semester?",
+                "Kapan libur semester genap?",
+                "Kapan perkuliahan dimulai?"
+            ],
+            "syarat": [
+                "Apa syarat mengikuti ujian skripsi?",
+                "Apa syarat magang/KKN?",
+                "Apa syarat pindah jurusan?"
+            ]
+        }
+        
+        # Find matching topic
+        for topic, questions in topic_questions.items():
+            if topic in question_lower:
+                # Add questions that are different from original
+                for q in questions:
+                    if q.lower() != question_lower and len(related) < max_questions:
+                        related.append(q)
+        
+        # If no specific topic match, add general academic questions
+        if len(related) < 2:
+            general_questions = [
+                "Apa syarat kelulusan program S1?",
+                "Bagaimana prosedur pengajuan surat keterangan?",
+                "Siapa yang bisa dihubungi untuk konsultasi akademik?"
+            ]
+            for q in general_questions:
+                if len(related) < max_questions:
+                    related.append(q)
+        
+        return related[:max_questions]
     
     def _rerank_documents(self, question, docs):
         """

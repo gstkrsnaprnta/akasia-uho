@@ -7,6 +7,8 @@ interface Message {
     content: string
     citations?: string[]
     confidence?: number
+    relatedQuestions?: string[]
+    feedback?: "up" | "down" | null
 }
 
 interface ChatRoom {
@@ -25,6 +27,7 @@ interface ChatContextType {
     createNewRoom: () => void
     switchRoom: (roomId: string) => void
     deleteRoom: (roomId: string) => void
+    submitFeedback: (messageIndex: number, rating: "up" | "down") => void
 }
 
 const ChatContext = React.createContext<ChatContextType | undefined>(undefined)
@@ -153,6 +156,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             let fullText = ""
             let citationsReceived: string[] = []
             let confidenceReceived: number | undefined = undefined
+            let relatedQuestionsReceived: string[] = []
 
             // Add empty AI message
             setRooms(prev => prev.map(room => {
@@ -201,6 +205,22 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                         if (data.confidence !== undefined) {
                             confidenceReceived = data.confidence
                         }
+
+                        if (data.related_questions) {
+                            relatedQuestionsReceived = data.related_questions
+                            // Update message with related questions
+                            setRooms(prev => prev.map(room => {
+                                if (room.id === roomId) {
+                                    const updated = [...room.messages]
+                                    updated[updated.length - 1] = {
+                                        ...updated[updated.length - 1],
+                                        relatedQuestions: relatedQuestionsReceived
+                                    }
+                                    return { ...room, messages: updated }
+                                }
+                                return room
+                            }))
+                        }
                     } catch {
                         // Skip invalid JSON chunks
                     }
@@ -226,6 +246,43 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         }
     }
 
+    const submitFeedback = async (messageIndex: number, rating: "up" | "down") => {
+        const room = rooms.find(r => r.id === currentRoomId)
+        if (!room || messageIndex >= room.messages.length) return
+
+        const message = room.messages[messageIndex]
+        if (message.role !== "ai") return
+
+        // Find the user question (previous message)
+        const userQuestion = messageIndex > 0 ? room.messages[messageIndex - 1]?.content : ""
+
+        // Update UI immediately
+        setRooms(prev => prev.map(r => {
+            if (r.id === currentRoomId) {
+                const updated = [...r.messages]
+                updated[messageIndex] = { ...updated[messageIndex], feedback: rating }
+                return { ...r, messages: updated }
+            }
+            return r
+        }))
+
+        // Send to API
+        try {
+            await fetch("http://localhost:8000/api/feedback", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    query: userQuestion,
+                    response: message.content,
+                    rating: rating,
+                    confidence: message.confidence
+                })
+            })
+        } catch (error) {
+            console.error("Failed to submit feedback:", error)
+        }
+    }
+
     return (
         <ChatContext.Provider value={{
             rooms,
@@ -235,7 +292,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
             sendMessage,
             createNewRoom,
             switchRoom,
-            deleteRoom
+            deleteRoom,
+            submitFeedback
         }}>
             {children}
         </ChatContext.Provider>

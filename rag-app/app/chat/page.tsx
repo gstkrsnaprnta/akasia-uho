@@ -53,7 +53,7 @@ const questionVariants = {
 }
 
 export default function Home() {
-  const { messages, isTyping, sendMessage } = useChat()
+  const { messages, isTyping, sendMessage, submitFeedback } = useChat()
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -171,7 +171,7 @@ export default function Home() {
                   AKASIA
                 </h1>
                 <p className="text-slate-500 text-xs">
-                  Asisten Akademik v2.1
+                  Asisten Akademik v2.2
                 </p>
               </motion.div>
 
@@ -183,6 +183,11 @@ export default function Home() {
                   content={msg.content}
                   citations={msg.citations}
                   confidence={msg.confidence}
+                  relatedQuestions={msg.relatedQuestions}
+                  feedback={msg.feedback}
+                  messageIndex={i}
+                  onFeedback={(rating) => submitFeedback(i, rating)}
+                  onQuestionClick={(q) => sendMessage(q)}
                 />
               ))}
             </motion.div>

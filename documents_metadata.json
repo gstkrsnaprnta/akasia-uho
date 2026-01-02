@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 21,
-  "last_query_at": "2026-01-02T18:06:57.870638",
+  "total_queries": 30,
+  "last_query_at": "2026-01-02T20:05:44.063124",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -47,6 +47,55 @@
     {
       "query": "Berapa lama masa studi S1?",
       "timestamp": "2026-01-02T18:06:57.870735"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-02T18:14:35.346134"
+    },
+    {
+      "query": "Kapan jadwal pembayaran SPP/UKT untuk Semester Gasal 2025.1 bagi mahasiswa ongoing?",
+      "timestamp": "2026-01-02T18:15:56.799837"
+    },
+    {
+      "query": "Tanggal berapa pengisian KRS online Semester Gasal 2025.1 dimulai dan berakhir?",
+      "timestamp": "2026-01-02T18:17:16.743294"
+    },
+    {
+      "query": "Kapan masa perkuliahan Semester Gasal 2025.1 resmi dimulai?",
+      "timestamp": "2026-01-02T18:17:42.494439"
+    },
+    {
+      "query": "Kapan jadwal Ujian Tengah Semester (UTS) untuk Semester Gasal 2025.1?",
+      "timestamp": "2026-01-02T18:17:59.752110"
+    },
+    {
+      "query": "Kapan batas akhir penginputan nilai semester gasal 2025.1 di SIAKAD?",
+      "timestamp": "2026-01-02T18:18:58.492859"
+    },
+    {
+      "query": "Kapan pelaksanaan Wisuda periode April - Juli 2025?",
+      "timestamp": "2026-01-02T18:19:24.547923"
+    },
+    {
+      "query": "Bagaimana prosedur cuti akademik?",
+      "timestamp": "2026-01-02T18:20:48.316130"
+    },
+    {
+      "query": "Berapa lama masa studi S1?",
+      "timestamp": "2026-01-02T20:05:44.063136"
     }
-  ]
+  ],
+  "feedback_history": [
+    {
+      "query": "masa studi S1",
+      "response": "7 tahun",
+      "rating": "up",
+      "confidence": 75,
+      "timestamp": "2026-01-02T20:07:36.069465"
+    }
+  ],
+  "feedback_stats": {
+    "thumbs_up": 1,
+    "thumbs_down": 0
+  }
 }

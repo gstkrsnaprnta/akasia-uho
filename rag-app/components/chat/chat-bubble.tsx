@@ -1,15 +1,16 @@
 "use client"
 
 /**
- * ChatBubble Component - AKASIA v2.1
- * Komponen gelembung chat dengan animasi halus
- * Menggunakan Framer Motion untuk GPU-accelerated animations
- * + Confidence Score Badge (v2.1)
+ * ChatBubble Component - AKASIA v2.2
+ * Komponen gelembung chat dengan:
+ * - Confidence Badge
+ * - Feedback Buttons (👍/👎)
+ * - Related Questions
  */
 
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { User, Sparkles, BookOpen, Shield, ShieldCheck, ShieldAlert } from "lucide-react"
+import { User, Sparkles, BookOpen, Shield, ShieldCheck, ShieldAlert, ThumbsUp, ThumbsDown, MessageCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface ChatBubbleProps {
@@ -18,6 +19,11 @@ interface ChatBubbleProps {
     citations?: string[]
     isTyping?: boolean
     confidence?: number
+    relatedQuestions?: string[]
+    feedback?: "up" | "down" | null
+    messageIndex?: number
+    onFeedback?: (rating: "up" | "down") => void
+    onQuestionClick?: (question: string) => void
 }
 
 // Animation variants untuk performa optimal
@@ -136,7 +142,17 @@ function ConfidenceBadge({ confidence }: { confidence: number }) {
     )
 }
 
-export function ChatBubble({ role, content, citations, isTyping, confidence }: ChatBubbleProps) {
+export function ChatBubble({
+    role,
+    content,
+    citations,
+    isTyping,
+    confidence,
+    relatedQuestions,
+    feedback,
+    onFeedback,
+    onQuestionClick
+}: ChatBubbleProps) {
     const isAI = role === "ai"
 
     return (
@@ -248,6 +264,73 @@ export function ChatBubble({ role, content, citations, isTyping, confidence }: C
                                     <span className="truncate max-w-[150px]">{cite}</span>
                                 </motion.div>
                             ))}
+                        </motion.div>
+                    )}
+
+                    {/* v2.2: Feedback Buttons */}
+                    {isAI && content && !isTyping && onFeedback && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.5 }}
+                            className="flex items-center gap-2 mt-2 ml-1"
+                        >
+                            <span className="text-xs text-slate-500 mr-1">Apakah jawaban ini membantu?</span>
+                            <button
+                                onClick={() => onFeedback("up")}
+                                className={cn(
+                                    "p-1.5 rounded-lg transition-all duration-200",
+                                    feedback === "up"
+                                        ? "bg-emerald-500/20 text-emerald-400"
+                                        : "hover:bg-slate-700 text-slate-400 hover:text-emerald-400"
+                                )}
+                            >
+                                <ThumbsUp className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={() => onFeedback("down")}
+                                className={cn(
+                                    "p-1.5 rounded-lg transition-all duration-200",
+                                    feedback === "down"
+                                        ? "bg-red-500/20 text-red-400"
+                                        : "hover:bg-slate-700 text-slate-400 hover:text-red-400"
+                                )}
+                            >
+                                <ThumbsDown className="w-4 h-4" />
+                            </button>
+                        </motion.div>
+                    )}
+
+                    {/* v2.2: Related Questions */}
+                    {isAI && relatedQuestions && relatedQuestions.length > 0 && !isTyping && onQuestionClick && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 }}
+                            className="mt-3 ml-1"
+                        >
+                            <div className="flex items-center gap-1.5 mb-2 text-xs text-slate-500">
+                                <MessageCircle className="w-3.5 h-3.5" />
+                                <span>Pertanyaan terkait:</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {relatedQuestions.map((q, i) => (
+                                    <motion.button
+                                        key={i}
+                                        onClick={() => onQuestionClick(q)}
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                        className={cn(
+                                            "px-3 py-1.5 rounded-full text-xs",
+                                            "bg-purple-500/10 border border-purple-500/20",
+                                            "text-purple-300 hover:bg-purple-500/20",
+                                            "transition-colors duration-200"
+                                        )}
+                                    >
+                                        {q}
+                                    </motion.button>
+                                ))}
+                            </div>
                         </motion.div>
                     )}
                 </div>
