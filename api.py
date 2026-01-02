@@ -152,6 +152,85 @@ async def get_stats():
     stats["vector_db_size_bytes"] = faiss_size
     return stats
 
+@app.get("/api/analytics")
+async def get_analytics():
+    """Get detailed analytics for dashboard"""
+    from datetime import datetime, timedelta
+    from collections import Counter
+    
+    # Load query history
+    query_history = engine.metadata.get("query_history", [])
+    
+    # Get hourly stats for last 24 hours
+    now = datetime.now()
+    hourly_stats = []
+    for i in range(24, 0, -1):
+        hour_start = now - timedelta(hours=i)
+        hour_end = now - timedelta(hours=i-1)
+        count = sum(1 for q in query_history 
+                    if hour_start.isoformat() <= q.get("timestamp", "") < hour_end.isoformat())
+        hourly_stats.append({
+            "time": hour_start.strftime("%H:%M"),
+            "queries": count
+        })
+    
+    # Get daily stats for last 7 days
+    daily_stats = []
+    for i in range(7, 0, -1):
+        day_start = (now - timedelta(days=i)).replace(hour=0, minute=0, second=0)
+        day_end = (now - timedelta(days=i-1)).replace(hour=0, minute=0, second=0)
+        count = sum(1 for q in query_history 
+                    if day_start.isoformat() <= q.get("timestamp", "") < day_end.isoformat())
+        daily_stats.append({
+            "day": day_start.strftime("%a"),
+            "date": day_start.strftime("%d/%m"),
+            "queries": count
+        })
+    
+    # Get popular questions (simplified categorization)
+    question_categories = {
+        "Masa Studi": ["masa studi", "lama kuliah", "berapa tahun", "durasi"],
+        "SKS": ["sks", "kredit", "beban studi"],
+        "Wisuda": ["wisuda", "lulus", "kelulusan", "yudisium"],
+        "IPK/IPS": ["ipk", "ips", "nilai", "prestasi"],
+        "Cuti": ["cuti", "tidak aktif", "izin"],
+        "KRS": ["krs", "rencana studi", "mata kuliah"],
+        "Jadwal": ["jadwal", "kalender", "tanggal", "kapan"],
+        "Syarat": ["syarat", "ketentuan", "aturan", "peraturan"]
+    }
+    
+    category_counts = Counter()
+    for q in query_history:
+        query_lower = q.get("query", "").lower()
+        for category, keywords in question_categories.items():
+            if any(kw in query_lower for kw in keywords):
+                category_counts[category] += 1
+                break
+        else:
+            category_counts["Lainnya"] += 1
+    
+    popular_topics = [
+        {"topic": topic, "count": count, "percentage": round(count / max(len(query_history), 1) * 100)}
+        for topic, count in category_counts.most_common(8)
+    ]
+    
+    # Recent queries (last 10)
+    recent_queries = [
+        {"query": q.get("query", "")[:50], "timestamp": q.get("timestamp", "")}
+        for q in sorted(query_history, key=lambda x: x.get("timestamp", ""), reverse=True)[:10]
+    ]
+    
+    return {
+        "hourly_stats": hourly_stats,
+        "daily_stats": daily_stats,
+        "popular_topics": popular_topics,
+        "recent_queries": recent_queries,
+        "total_queries_today": sum(1 for q in query_history 
+                                    if q.get("timestamp", "").startswith(now.strftime("%Y-%m-%d"))),
+        "total_queries_week": sum(1 for q in query_history 
+                                   if (now - timedelta(days=7)).isoformat() <= q.get("timestamp", ""))
+    }
+
 @app.post("/api/clear-knowledge-base")
 async def clear_knowledge_base():
     """Clear all documents and reset the knowledge base"""

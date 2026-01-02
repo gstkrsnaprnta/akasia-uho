@@ -250,9 +250,24 @@ class RAGEngine:
             "last_query_at": self.metadata.get("last_query_at")
         }
     
-    def increment_query_count(self):
+    def increment_query_count(self, query_text: str = ""):
+        """Track query for analytics"""
         self.metadata["total_queries"] = self.metadata.get("total_queries", 0) + 1
         self.metadata["last_query_at"] = datetime.now().isoformat()
+        
+        # Track query history (keep last 500 queries)
+        if "query_history" not in self.metadata:
+            self.metadata["query_history"] = []
+        
+        self.metadata["query_history"].append({
+            "query": query_text,
+            "timestamp": datetime.now().isoformat()
+        })
+        
+        # Keep only last 500 queries to avoid large files
+        if len(self.metadata["query_history"]) > 500:
+            self.metadata["query_history"] = self.metadata["query_history"][-500:]
+        
         self.save_metadata()
 
     def load_existing_vectorstore(self):
@@ -538,7 +553,7 @@ class RAGEngine:
             yield {"response": "Knowledge base belum tersedia. Silakan upload dokumen di halaman Admin, atau letakkan file PDF di folder 'data/'."}
             return
          
-        self.increment_query_count()
+        self.increment_query_count(question)
         
         # Apply synonym mapping early for better retrieval
         question_expanded = self._apply_synonym_mapping(question)

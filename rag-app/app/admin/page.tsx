@@ -117,8 +117,8 @@ export default function AdminPage() {
                 </div>
                 <div className="flex gap-3">
                     <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm ${backendOnline
-                            ? 'bg-green-500/10 border border-green-500/20 text-green-400'
-                            : 'bg-red-500/10 border border-red-500/20 text-red-400'
+                        ? 'bg-green-500/10 border border-green-500/20 text-green-400'
+                        : 'bg-red-500/10 border border-red-500/20 text-red-400'
                         }`}>
                         <div className={`w-2 h-2 rounded-full ${backendOnline ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
                         {backendOnline ? 'System Online' : 'Backend Offline'}
@@ -144,39 +144,46 @@ export default function AdminPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatsCard
                     title="Total Dokumen"
-                    value={stats?.total_documents?.toString() || '0'}
+                    value={stats?.total_documents || 0}
                     change={documents.length > 0 ? `${documents.length} aktif` : 'Belum ada'}
                     icon={FileText}
+                    color="blue"
                 />
                 <StatsCard
                     title="Total Queries"
-                    value={stats?.total_queries?.toString() || '0'}
+                    value={stats?.total_queries || 0}
                     change={stats?.last_query_at ? formatDate(stats.last_query_at) : 'Belum ada'}
                     icon={Activity}
+                    color="purple"
+                    trend="up"
                 />
                 <StatsCard
                     title="Ukuran Dokumen"
                     value={formatBytes(stats?.total_size_bytes || 0)}
                     change="Total upload"
                     icon={Clock}
+                    color="cyan"
                 />
                 <StatsCard
                     title="Vector DB Size"
                     value={formatBytes(stats?.vector_db_size_bytes || 0)}
                     change="FAISS index"
                     icon={Database}
+                    color="green"
                 />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Main Chart */}
-                <div className="lg:col-span-2">
-                    <AnalyticsChart />
-                </div>
-
-                {/* Upload Zone */}
-                <UploadZone onUploadComplete={fetchData} />
+            {/* Analytics Section */}
+            <div className="space-y-6">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-purple-400" />
+                    Analytics Dashboard
+                </h2>
+                <AnalyticsChart />
             </div>
+
+            {/* Upload Zone */}
+            <UploadZone onUploadComplete={fetchData} />
 
             {/* Knowledge Base Manager */}
             <div className="space-y-4">
@@ -227,8 +234,8 @@ export default function AdminPage() {
                                         <td className="p-4 text-slate-400">{formatBytes(doc.size_bytes)}</td>
                                         <td className="p-4">
                                             <span className={`px-2 py-1 rounded-full text-xs border ${doc.status === "indexed"
-                                                    ? "bg-green-500/10 border-green-500/20 text-green-400"
-                                                    : "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
+                                                ? "bg-green-500/10 border-green-500/20 text-green-400"
+                                                : "bg-yellow-500/10 border-yellow-500/20 text-yellow-400"
                                                 }`}>
                                                 {doc.status === 'indexed' ? 'Terindeks' : doc.status}
                                             </span>
