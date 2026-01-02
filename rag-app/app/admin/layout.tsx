@@ -97,8 +97,8 @@ export default function AdminLayout({
                 <SidebarContent />
             </motion.div>
 
-            {/* Main content - no pl-64 here since root layout already has it */}
-            <div className="min-h-screen relative z-10">
+            {/* Main content - needs pl-64 for sidebar offset */}
+            <div className="md:pl-64 min-h-screen relative z-10">
                 {children}
             </div>
         </div>

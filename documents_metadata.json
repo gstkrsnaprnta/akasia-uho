@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 19,
-  "last_query_at": "2026-01-02T12:49:10.917703",
+  "total_queries": 20,
+  "last_query_at": "2026-01-02T13:50:42.222977",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -39,6 +39,10 @@
     {
       "query": "Berapa nilai angka minimal untuk mendapatkan Nilai Huruf B?",
       "timestamp": "2026-01-02T12:49:10.917720"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-02T13:50:42.223151"
     }
   ]
 }
