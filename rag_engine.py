@@ -777,13 +777,14 @@ class RAGEngine:
                     raise e
         raise Exception("Semua model sedang sibuk. Coba lagi.")
 
-    def query_stream(self, question):
+    def query_stream(self, question, history=None):
         """
-        v2.1: Enhanced RAG query dengan:
+        v2.5: Enhanced RAG query dengan:
         - Hybrid Search (Semantic + BM25)
         - Cross-Encoder Neural Re-ranking
         - Confidence Scoring
         - Anti-hallucination prompting
+        - Conversation Memory (v2.5)
         """
         self.refresh_vectorstore()
         
@@ -909,10 +910,18 @@ PERTANYAAN: {question}
 
 Instruksi: Cari jawaban di REFERENSI di atas. Jika ditemukan, jawab SINGKAT dengan sumber. Jika tidak ditemukan, katakan tidak tersedia."""
 
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt}
-        ]
+        # v2.5: Build messages with conversation history
+        messages = [{"role": "system", "content": system_prompt}]
+        
+        # Include conversation history for context (max 6 turns)
+        if history:
+            for role, content in history[-6:]:
+                if role == "user":
+                    messages.append({"role": "user", "content": content})
+                else:
+                    messages.append({"role": "assistant", "content": content})
+        
+        messages.append({"role": "user", "content": prompt})
         
         try:
             stream = self._call_llm(messages, stream=True)

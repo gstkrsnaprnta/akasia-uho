@@ -141,10 +141,20 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         setIsTyping(true)
 
         try {
+            // v2.5: Build conversation history for context
+            const room = rooms.find(r => r.id === roomId)
+            const historyMessages = room?.messages.slice(-6).map(m => ({
+                role: m.role,
+                content: m.content
+            })) || []
+
             const response = await fetch("http://localhost:8000/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: content })
+                body: JSON.stringify({
+                    message: content,
+                    history: historyMessages  // Send conversation history
+                })
             })
 
             if (!response.ok) throw new Error("Network response was not ok")

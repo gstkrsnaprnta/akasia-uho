@@ -33,7 +33,7 @@ from datetime import datetime
 app = FastAPI(
     title="AKASIA API",
     description="Asisten Akademik Berbasis AI untuk Universitas Halu Oleo",
-    version="2.2.0"
+    version="2.5.0"
 )
 
 # Enable CORS
@@ -47,8 +47,13 @@ app.add_middleware(
 
 engine = RAGEngine()
 
+class ChatMessage(BaseModel):
+    role: str  # "user" or "ai"
+    content: str
+
 class ChatRequest(BaseModel):
     message: str
+    history: Optional[List[ChatMessage]] = None  # v2.5: Conversation history
 
 class FeedbackRequest(BaseModel):
     query: str
@@ -70,7 +75,9 @@ async def chat(request: ChatRequest):
             yield json.dumps({"response": "Knowledge base belum tersedia. Silakan upload dokumen terlebih dahulu di halaman Admin."}) + "\n"
             return
 
-        for chunk in engine.query_stream(request.message):
+        # v2.5: Pass conversation history to query_stream
+        history = [(m.role, m.content) for m in request.history] if request.history else []
+        for chunk in engine.query_stream(request.message, history=history):
              yield json.dumps(chunk) + "\n"
 
     return StreamingResponse(generate(), media_type="application/x-ndjson")

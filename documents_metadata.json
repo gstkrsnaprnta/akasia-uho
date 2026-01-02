@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 39,
-  "last_query_at": "2026-01-02T21:03:01.766559",
+  "total_queries": 42,
+  "last_query_at": "2026-01-02T21:33:52.239613",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -119,6 +119,18 @@
     {
       "query": "Apa syarat magang/KKN?",
       "timestamp": "2026-01-02T21:03:01.766590"
+    },
+    {
+      "query": "Apa syarat mengikuti ujian skripsi?",
+      "timestamp": "2026-01-02T21:11:26.016003"
+    },
+    {
+      "query": "Apa syarat pindah jurusan?",
+      "timestamp": "2026-01-02T21:11:38.912474"
+    },
+    {
+      "query": "Berapa lama masa studi S1?",
+      "timestamp": "2026-01-02T21:33:52.239635"
     }
   ],
   "feedback_history": [
