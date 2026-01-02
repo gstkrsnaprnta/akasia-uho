@@ -1,0 +1,22 @@
+{
+  "documents": [
+    {
+      "id": "a3031950-d8c4-4adb-86ab-6d2d48b82f5c",
+      "filename": "Kalender_ Akdemik 2025_2026.pdf",
+      "size_bytes": 2491590,
+      "uploaded_at": "2026-01-02T10:01:55.201705",
+      "status": "indexed",
+      "chunks_count": 23
+    },
+    {
+      "id": "561edfa6-9715-46e3-833d-7e14e03336e7",
+      "filename": "Peraturan-Rektor-Nomor-1-Tahun-2019-Tentang-Peraturan-Akademik-UHO.pdf",
+      "size_bytes": 822640,
+      "uploaded_at": "2026-01-02T10:02:03.073198",
+      "status": "indexed",
+      "chunks_count": 350
+    }
+  ],
+  "total_queries": 10,
+  "last_query_at": "2026-01-02T10:02:12.304852"
+}

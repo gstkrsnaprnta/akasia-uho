@@ -60,14 +60,34 @@ chatbot_uho/
 
 - Python 3.10+
 - Node.js 18+
-- Tesseract OCR (untuk PDF scan): `brew install tesseract tesseract-lang`
 
-### 1. Clone Repository
+### 🚀 Quick Start (3 Langkah)
 
 ```bash
-git clone https://github.com/[username]/akasia-uho.git
+# 1. Clone repository
+git clone https://github.com/gstkrsnaprnta/akasia-uho.git
 cd akasia-uho
+
+# 2. Setup otomatis (install dependencies + buat .env)
+chmod +x setup.sh && ./setup.sh
+
+# 3. Jalankan backend (Terminal 1)
+source venv/bin/activate && python api.py
 ```
+
+```bash
+# 4. Jalankan frontend (Terminal 2)
+cd rag-app && npm install && npm run dev
+```
+
+**Akses:** http://localhost:3000
+
+> ✅ **Catatan:** Knowledge base sudah ter-index (2 dokumen akademik UHO).
+> API key demo sudah tersedia di `.env.example`.
+
+---
+
+### Instalasi Manual (Opsional)
 
 ### 2. Setup Backend Python
 

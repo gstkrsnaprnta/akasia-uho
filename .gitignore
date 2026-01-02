@@ -35,11 +35,8 @@ venv.bak/
 .env
 .env.local
 
-# FAISS Index (akan di-generate ulang)
-faiss_index/
-
-# Documents Metadata (akan di-generate ulang)
-documents_metadata.json
+# CATATAN: faiss_index/ dan documents_metadata.json TIDAK di-ignore
+# agar dosen bisa langsung testing tanpa perlu index ulang
 
 # ChromaDB
 chroma_db/
