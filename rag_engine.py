@@ -1,23 +1,18 @@
 """
 ============================================
-AKASIA v1.0 - RAG Engine
+AKASIA v2.1 - RAG Engine
 ============================================
 Retrieval-Augmented Generation Engine
 
-File ini berisi mesin utama chatbot yang melakukan:
-- Ekstraksi teks dari PDF (termasuk OCR untuk PDF scan)
-- Chunking dan indexing dokumen ke FAISS vector database
-- Multi-strategy retrieval (semantik, keyword, regulatory)
-- Query processing dan streaming response ke LLM
-
-Komponen Utama:
-- RAGEngine: Kelas utama untuk semua operasi RAG
-- _extract_pdf_text: Ekstraksi teks dengan fallback OCR
-- create_vectorstore: Membuat/update index FAISS
-- query_stream: Menjawab pertanyaan dengan streaming
+Fitur v2.1:
+- Hybrid Search: FAISS semantic + BM25 keyword
+- Cross-Encoder Re-ranking: Neural relevance scoring
+- Confidence Scoring: Tampilkan keyakinan jawaban
+- Enhanced Chunking: Pasal-aware + semantic
 
 Model yang digunakan:
 - Embedding: paraphrase-multilingual-MiniLM-L12-v2
+- Re-ranker: cross-encoder/ms-marco-MiniLM-L-6-v2
 - LLM: Groq Llama 3.1 8B Instant
 ============================================
 """
@@ -49,6 +44,13 @@ class RAGEngine:
         self.fallback_model = "llama-3.2-3b-preview"
         self.metadata = self.load_metadata()
         
+        # v2.1: Initialize BM25 index and cross-encoder
+        self.bm25_index = None
+        self.bm25_corpus = []
+        self.cross_encoder = None
+        self._init_cross_encoder()
+        self._build_bm25_index()
+        
         # Auto-load documents from data folder on startup
         self._auto_load_documents()
     
@@ -59,6 +61,235 @@ class RAGEngine:
             model_kwargs={'device': 'cpu'}
         )
     
+    # ========================================
+    # v2.1: BM25 Index for Hybrid Search
+    # ========================================
+    
+    def _build_bm25_index(self):
+        """Build BM25 index from existing vectorstore documents"""
+        try:
+            from rank_bm25 import BM25Okapi
+            
+            if not self.vectorstore:
+                print("  ℹ️ No vectorstore yet, BM25 index will be built after document load")
+                return
+            
+            # Get all documents from vectorstore
+            all_docs = self.vectorstore.docstore._dict.values()
+            self.bm25_corpus = []
+            self.bm25_doc_map = {}
+            
+            for i, doc in enumerate(all_docs):
+                # Tokenize for BM25
+                tokens = self._tokenize_for_bm25(doc.page_content)
+                self.bm25_corpus.append(tokens)
+                self.bm25_doc_map[i] = doc
+            
+            if self.bm25_corpus:
+                self.bm25_index = BM25Okapi(self.bm25_corpus)
+                print(f"  ✓ BM25 index built: {len(self.bm25_corpus)} documents")
+            
+        except Exception as e:
+            print(f"  ⚠️ BM25 index build failed: {e}")
+            self.bm25_index = None
+    
+    def _tokenize_for_bm25(self, text):
+        """Tokenize text for BM25 (simple whitespace + lowercase)"""
+        # Remove punctuation and lowercase
+        text = re.sub(r'[^\w\s]', ' ', text.lower())
+        tokens = text.split()
+        # Remove short tokens
+        return [t for t in tokens if len(t) > 2]
+    
+    def _bm25_search(self, query, k=20):
+        """Search using BM25 keyword matching"""
+        if not self.bm25_index or not self.bm25_corpus:
+            return []
+        
+        query_tokens = self._tokenize_for_bm25(query)
+        scores = self.bm25_index.get_scores(query_tokens)
+        
+        # Get top k indices
+        top_indices = sorted(range(len(scores)), key=lambda i: scores[i], reverse=True)[:k]
+        
+        results = []
+        for idx in top_indices:
+            if idx in self.bm25_doc_map and scores[idx] > 0:
+                results.append((self.bm25_doc_map[idx], scores[idx]))
+        
+        return results
+    
+    # ========================================
+    # v2.1: Cross-Encoder Re-ranking
+    # ========================================
+    
+    def _init_cross_encoder(self):
+        """Initialize cross-encoder model for neural re-ranking"""
+        try:
+            from sentence_transformers import CrossEncoder
+            print("  ⏳ Loading cross-encoder model...")
+            self.cross_encoder = CrossEncoder(
+                'cross-encoder/ms-marco-MiniLM-L-6-v2',
+                max_length=512
+            )
+            print("  ✓ Cross-encoder loaded")
+        except Exception as e:
+            print(f"  ⚠️ Cross-encoder init failed: {e}")
+            self.cross_encoder = None
+    
+    def _cross_encoder_rerank(self, query, docs, top_k=10):
+        """Re-rank documents using cross-encoder neural model"""
+        if not self.cross_encoder or not docs:
+            return docs[:top_k]
+        
+        try:
+            # Prepare query-document pairs
+            pairs = [[query, doc.page_content[:512]] for doc, _, _ in docs]
+            
+            # Get cross-encoder scores
+            scores = self.cross_encoder.predict(pairs)
+            
+            # Combine with original docs
+            scored_docs = [(docs[i][0], docs[i][1], docs[i][2], float(scores[i])) 
+                          for i in range(len(docs))]
+            
+            # Sort by cross-encoder score (higher is better)
+            scored_docs.sort(key=lambda x: x[3], reverse=True)
+            
+            return scored_docs[:top_k]
+        except Exception as e:
+            print(f"  ⚠️ Cross-encoder rerank failed: {e}")
+            return [(d, s, st, 0.5) for d, s, st in docs[:top_k]]
+    
+    # ========================================
+    # v2.1: Hybrid Search (Semantic + BM25)
+    # ========================================
+    
+    def _hybrid_search(self, query, k=30, alpha=0.7):
+        """
+        Hybrid search combining semantic (FAISS) and keyword (BM25) search.
+        alpha: weight for semantic search (1-alpha for BM25)
+        """
+        all_results = []
+        seen_hashes = set()
+        
+        # 1. Semantic search via FAISS
+        semantic_results = self.vectorstore.similarity_search_with_score(query, k=k)
+        
+        # Normalize FAISS scores (lower is better, convert to 0-1 higher is better)
+        if semantic_results:
+            max_score = max(score for _, score in semantic_results) + 0.001
+            for doc, score in semantic_results:
+                content_hash = hash(doc.page_content[:100])
+                if content_hash not in seen_hashes:
+                    normalized_semantic = 1 - (score / max_score)
+                    all_results.append({
+                        'doc': doc,
+                        'semantic_score': normalized_semantic,
+                        'bm25_score': 0,
+                        'hash': content_hash
+                    })
+                    seen_hashes.add(content_hash)
+        
+        # 2. BM25 keyword search
+        bm25_results = self._bm25_search(query, k=k)
+        
+        if bm25_results:
+            max_bm25 = max(score for _, score in bm25_results) + 0.001
+            for doc, score in bm25_results:
+                content_hash = hash(doc.page_content[:100])
+                normalized_bm25 = score / max_bm25
+                
+                # Check if already in results from semantic search
+                found = False
+                for r in all_results:
+                    if r['hash'] == content_hash:
+                        r['bm25_score'] = normalized_bm25
+                        found = True
+                        break
+                
+                if not found:
+                    all_results.append({
+                        'doc': doc,
+                        'semantic_score': 0,
+                        'bm25_score': normalized_bm25,
+                        'hash': content_hash
+                    })
+        
+        # 3. Calculate hybrid score
+        for r in all_results:
+            r['hybrid_score'] = alpha * r['semantic_score'] + (1 - alpha) * r['bm25_score']
+        
+        # Sort by hybrid score (higher is better)
+        all_results.sort(key=lambda x: x['hybrid_score'], reverse=True)
+        
+        # Return in format compatible with existing code
+        return [(r['doc'], 1 - r['hybrid_score'], 'hybrid') for r in all_results[:k]]
+    
+    # ========================================
+    # v2.1: Confidence Scoring
+    # ========================================
+    
+    def _calculate_confidence(self, query, retrieved_docs, cross_encoder_scores=None):
+        """
+        Calculate confidence score (0-100) based on multiple factors:
+        - Top document relevance
+        - Score consistency (gap between top docs)
+        - Keyword coverage
+        - Cross-encoder agreement
+        """
+        if not retrieved_docs:
+            return 0
+        
+        confidence_factors = []
+        
+        # Factor 1: Top document score (40% weight)
+        if cross_encoder_scores and len(cross_encoder_scores) > 0:
+            top_score = cross_encoder_scores[0]
+            # Cross-encoder scores range roughly -10 to 10
+            top_confidence = min(100, max(0, (top_score + 5) * 10))
+            confidence_factors.append(('top_score', top_confidence, 0.4))
+        
+        # Factor 2: Score consistency (20% weight)
+        # If top docs have similar scores, more confident
+        if cross_encoder_scores and len(cross_encoder_scores) >= 3:
+            score_std = self._calculate_std(cross_encoder_scores[:3])
+            consistency = max(0, 100 - score_std * 20)
+            confidence_factors.append(('consistency', consistency, 0.2))
+        
+        # Factor 3: Keyword coverage (25% weight)
+        query_words = set(self._tokenize_for_bm25(query))
+        if query_words and retrieved_docs:
+            top_doc_content = retrieved_docs[0].page_content.lower()
+            matches = sum(1 for w in query_words if w in top_doc_content)
+            coverage = (matches / len(query_words)) * 100
+            confidence_factors.append(('keyword_coverage', coverage, 0.25))
+        
+        # Factor 4: Multiple supporting docs (15% weight)
+        if cross_encoder_scores and len(cross_encoder_scores) >= 2:
+            # If multiple docs score highly, more confident
+            high_scorers = sum(1 for s in cross_encoder_scores[:5] if s > 0)
+            support = min(100, high_scorers * 25)
+            confidence_factors.append(('support', support, 0.15))
+        
+        # Calculate weighted average
+        if not confidence_factors:
+            return 50  # Default medium confidence
+        
+        total_weight = sum(w for _, _, w in confidence_factors)
+        weighted_sum = sum(score * weight for _, score, weight in confidence_factors)
+        
+        final_confidence = int(weighted_sum / total_weight) if total_weight > 0 else 50
+        return max(0, min(100, final_confidence))
+    
+    def _calculate_std(self, values):
+        """Calculate standard deviation"""
+        if len(values) < 2:
+            return 0
+        mean = sum(values) / len(values)
+        variance = sum((x - mean) ** 2 for x in values) / len(values)
+        return variance ** 0.5
+
     def _auto_load_documents(self):
         """Auto-load PDFs from data folder if not already indexed"""
         if not os.path.exists(DATA_FOLDER):
@@ -542,9 +773,10 @@ class RAGEngine:
 
     def query_stream(self, question):
         """
-        v2.0: Enhanced RAG query dengan:
-        - Multi-strategy retrieval
-        - Relevance re-ranking
+        v2.1: Enhanced RAG query dengan:
+        - Hybrid Search (Semantic + BM25)
+        - Cross-Encoder Neural Re-ranking
+        - Confidence Scoring
         - Anti-hallucination prompting
         """
         self.refresh_vectorstore()
@@ -559,64 +791,40 @@ class RAGEngine:
         question_expanded = self._apply_synonym_mapping(question)
         
         # ========================================
-        # STAGE 1: Multi-Strategy Retrieval
+        # STAGE 1: Hybrid Search (Semantic + BM25)
         # ========================================
-        all_docs = []
-        seen = set()
-        
-        # Strategy 1: Direct semantic search (highest priority)
-        docs1 = self.vectorstore.similarity_search_with_score(question_expanded, k=30)
-        for doc, score in docs1:
-            content_hash = hash(doc.page_content[:100])
-            if content_hash not in seen:
-                all_docs.append((doc, score, "semantic"))
-                seen.add(content_hash)
-        
-        # Strategy 2: Keyword-focused search
-        keywords = self._extract_keywords(question)
-        if keywords:
-            keyword_query = " ".join(keywords)
-            docs2 = self.vectorstore.similarity_search_with_score(keyword_query, k=15)
-            for doc, score in docs2:
-                content_hash = hash(doc.page_content[:100])
-                if content_hash not in seen:
-                    # Slightly penalize to prefer semantic
-                    all_docs.append((doc, score * 1.05, "keyword"))
-                    seen.add(content_hash)
-        
-        # Strategy 3: Entity/number search (for specific queries)
-        entities = self._extract_entities(question)
-        for entity in entities[:5]:
-            docs3 = self.vectorstore.similarity_search_with_score(entity, k=5)
-            for doc, score in docs3:
-                content_hash = hash(doc.page_content[:100])
-                if content_hash not in seen:
-                    all_docs.append((doc, score * 0.95, "entity"))
-                    seen.add(content_hash)
-        
-        # Strategy 4: Regulatory term boost
-        regulatory_terms = self._get_regulatory_terms(question)
-        for term in regulatory_terms[:3]:
-            docs4 = self.vectorstore.similarity_search_with_score(term, k=5)
-            for doc, score in docs4:
-                content_hash = hash(doc.page_content[:100])
-                if content_hash not in seen:
-                    all_docs.append((doc, score * 0.9, "regulatory"))
-                    seen.add(content_hash)
+        try:
+            hybrid_results = self._hybrid_search(question_expanded, k=30, alpha=0.7)
+        except Exception as e:
+            print(f"  ⚠️ Hybrid search failed, falling back: {e}")
+            # Fallback to semantic only
+            hybrid_results = [(doc, score, "semantic") 
+                             for doc, score in self.vectorstore.similarity_search_with_score(question_expanded, k=30)]
         
         # ========================================
-        # STAGE 2: Relevance Re-ranking
+        # STAGE 2: Cross-Encoder Neural Re-ranking
         # ========================================
-        reranked_docs = self._rerank_documents(question, all_docs)
-        relevant_docs = reranked_docs[:12]  # Top 12 most relevant
+        reranked_docs = self._cross_encoder_rerank(question, hybrid_results, top_k=12)
+        
+        # Extract cross-encoder scores for confidence calculation
+        cross_encoder_scores = [doc[3] for doc in reranked_docs] if reranked_docs else []
         
         # ========================================
-        # STAGE 3: Build Context
+        # STAGE 3: Calculate Confidence Score
+        # ========================================
+        relevant_doc_contents = [doc[0] for doc in reranked_docs]
+        confidence = self._calculate_confidence(question, relevant_doc_contents, cross_encoder_scores)
+        
+        # Yield confidence score to frontend
+        yield {"confidence": confidence}
+        
+        # ========================================
+        # STAGE 4: Build Context
         # ========================================
         context_parts = []
-        for i, (doc, score, strategy, relevance) in enumerate(relevant_docs, 1):
+        for i, (doc, score, strategy, ce_score) in enumerate(reranked_docs, 1):
             # Include relevance indicator for debugging
-            context_parts.append(f"=== BAGIAN {i} (relevansi: {relevance:.0%}) ===\n{doc.page_content}")
+            context_parts.append(f"=== BAGIAN {i} (skor: {ce_score:.2f}) ===\n{doc.page_content}")
         context = "\n\n".join(context_parts)
         
         # Limit context size but keep complete chunks
@@ -625,15 +833,15 @@ class RAGEngine:
         
         # Citations for UI
         citations = []
-        for doc, _, _, _ in relevant_docs[:3]:
+        for doc, _, _, _ in reranked_docs[:3]:
             citation = doc.page_content[:60].replace('[Sumber:', '').replace(']', '')
             citations.append(citation + "...")
         yield {"citations": citations}
         
         # ========================================
-        # STAGE 4: Enhanced Anti-Hallucination Prompt
+        # STAGE 5: Enhanced Anti-Hallucination Prompt
         # ========================================
-        system_prompt = """Anda adalah Asisten Akademik AKASIA v2.0 untuk Universitas Halu Oleo.
+        system_prompt = """Anda adalah Asisten Akademik AKASIA v2.1 untuk Universitas Halu Oleo.
 
 TUGAS UTAMA:
 Cari dan berikan jawaban dari REFERENSI yang diberikan. Dokumen berisi Peraturan Rektor dan Kalender Akademik UHO.

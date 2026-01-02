@@ -171,7 +171,7 @@ export default function Home() {
                   AKASIA
                 </h1>
                 <p className="text-slate-500 text-xs">
-                  Asisten Akademik v2.0
+                  Asisten Akademik v2.1
                 </p>
               </motion.div>
 
@@ -182,6 +182,7 @@ export default function Home() {
                   role={msg.role}
                   content={msg.content}
                   citations={msg.citations}
+                  confidence={msg.confidence}
                 />
               ))}
             </motion.div>

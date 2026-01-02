@@ -1,14 +1,15 @@
 "use client"
 
 /**
- * ChatBubble Component - AKASIA v2.0
+ * ChatBubble Component - AKASIA v2.1
  * Komponen gelembung chat dengan animasi halus
  * Menggunakan Framer Motion untuk GPU-accelerated animations
+ * + Confidence Score Badge (v2.1)
  */
 
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { User, Sparkles, BookOpen } from "lucide-react"
+import { User, Sparkles, BookOpen, Shield, ShieldCheck, ShieldAlert } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface ChatBubbleProps {
@@ -16,6 +17,7 @@ interface ChatBubbleProps {
     content: string
     citations?: string[]
     isTyping?: boolean
+    confidence?: number
 }
 
 // Animation variants untuk performa optimal
@@ -80,7 +82,6 @@ function TypingIndicator() {
                     transition={{
                         duration: 0.8,
                         repeat: Infinity,
-                        delay: i * 0.15,
                         ease: "easeInOut"
                     }}
                 />
@@ -89,7 +90,53 @@ function TypingIndicator() {
     )
 }
 
-export function ChatBubble({ role, content, citations, isTyping }: ChatBubbleProps) {
+// Confidence Badge Component
+function ConfidenceBadge({ confidence }: { confidence: number }) {
+    const getConfidenceStyle = () => {
+        if (confidence >= 80) return {
+            bg: "bg-emerald-500/20",
+            border: "border-emerald-500/30",
+            text: "text-emerald-400",
+            icon: ShieldCheck,
+            label: "Tinggi"
+        }
+        if (confidence >= 50) return {
+            bg: "bg-amber-500/20",
+            border: "border-amber-500/30",
+            text: "text-amber-400",
+            icon: Shield,
+            label: "Sedang"
+        }
+        return {
+            bg: "bg-red-500/20",
+            border: "border-red-500/30",
+            text: "text-red-400",
+            icon: ShieldAlert,
+            label: "Rendah"
+        }
+    }
+
+    const style = getConfidenceStyle()
+    const Icon = style.icon
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={cn(
+                "flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs",
+                "border backdrop-blur-sm",
+                style.bg, style.border, style.text
+            )}
+        >
+            <Icon className="w-3.5 h-3.5" />
+            <span>{confidence}%</span>
+            <span className="hidden sm:inline">• {style.label}</span>
+        </motion.div>
+    )
+}
+
+export function ChatBubble({ role, content, citations, isTyping, confidence }: ChatBubbleProps) {
     const isAI = role === "ai"
 
     return (
@@ -166,6 +213,13 @@ export function ChatBubble({ role, content, citations, isTyping }: ChatBubblePro
                             )}
                         </AnimatePresence>
                     </motion.div>
+
+                    {/* Confidence Badge (v2.1) */}
+                    {isAI && confidence !== undefined && !isTyping && (
+                        <div className="flex items-center gap-2 ml-1">
+                            <ConfidenceBadge confidence={confidence} />
+                        </div>
+                    )}
 
                     {/* Citations dengan stagger animation */}
                     {isAI && citations && citations.length > 0 && !isTyping && (

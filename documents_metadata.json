@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 20,
-  "last_query_at": "2026-01-02T13:50:42.222977",
+  "total_queries": 21,
+  "last_query_at": "2026-01-02T18:06:57.870638",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -43,6 +43,10 @@
     {
       "query": "Berapa masa studi maksimal S1?",
       "timestamp": "2026-01-02T13:50:42.223151"
+    },
+    {
+      "query": "Berapa lama masa studi S1?",
+      "timestamp": "2026-01-02T18:06:57.870735"
     }
   ]
 }

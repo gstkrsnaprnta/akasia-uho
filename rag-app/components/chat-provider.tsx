@@ -6,6 +6,7 @@ interface Message {
     role: "user" | "ai"
     content: string
     citations?: string[]
+    confidence?: number
 }
 
 interface ChatRoom {
@@ -151,13 +152,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
             let fullText = ""
             let citationsReceived: string[] = []
+            let confidenceReceived: number | undefined = undefined
 
             // Add empty AI message
             setRooms(prev => prev.map(room => {
                 if (room.id === roomId) {
                     return {
                         ...room,
-                        messages: [...room.messages, { role: "ai", content: "", citations: [] }]
+                        messages: [...room.messages, { role: "ai", content: "", citations: [], confidence: undefined }]
                     }
                 }
                 return room
@@ -183,7 +185,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
                                     updated[updated.length - 1] = {
                                         role: "ai",
                                         content: fullText,
-                                        citations: citationsReceived
+                                        citations: citationsReceived,
+                                        confidence: confidenceReceived
                                     }
                                     return { ...room, messages: updated }
                                 }
@@ -193,6 +196,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
                         if (data.citations) {
                             citationsReceived = data.citations
+                        }
+
+                        if (data.confidence !== undefined) {
+                            confidenceReceived = data.confidence
                         }
                     } catch {
                         // Skip invalid JSON chunks
