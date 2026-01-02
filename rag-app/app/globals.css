@@ -1,10 +1,11 @@
 /* 
  * ============================================
- * AKASIA v2.0 - Global Styles
+ * AKASIA v2.4 - Global Styles
  * Asisten Akademik Berbasis AI untuk UHO
  * ============================================
  * Warna tema: Biru-Ungu Modern
  * Optimized for smooth 60fps animations
+ * + Dark/Light Mode Support
  */
 
 @import "tailwindcss";
@@ -54,6 +55,65 @@
     --background: #0a0a12;
     --foreground: #ededed;
   }
+}
+
+/* ============================================
+ * Light Mode - v2.4
+ * ============================================ */
+:root.light {
+  --background: #f8fafc;
+  --foreground: #1e293b;
+  --bg-dark: #f1f5f9;
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-hover: rgba(0, 0, 0, 0.05);
+  --border-subtle: rgba(0, 0, 0, 0.1);
+}
+
+.light body {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #f1f5f9 100%);
+}
+
+.light .aurora-bg::before,
+.light .aurora-bg::after {
+  opacity: 0.3;
+}
+
+.light .glass {
+  background: rgba(255, 255, 255, 0.8);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+.light .text-white {
+  color: #1e293b !important;
+}
+
+.light .text-slate-100 {
+  color: #334155 !important;
+}
+
+.light .text-slate-200 {
+  color: #475569 !important;
+}
+
+.light .text-slate-300 {
+  color: #64748b !important;
+}
+
+.light .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
+.light .bg-slate-900\/50,
+.light .bg-slate-900\/60,
+.light .bg-slate-800\/50,
+.light .bg-slate-800\/30 {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light .border-slate-700\/50,
+.light .border-slate-700 {
+  border-color: rgba(0, 0, 0, 0.15) !important;
 }
 
 /* ============================================

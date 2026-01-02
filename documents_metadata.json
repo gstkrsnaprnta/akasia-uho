@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 37,
-  "last_query_at": "2026-01-02T20:25:33.604401",
+  "total_queries": 39,
+  "last_query_at": "2026-01-02T21:03:01.766559",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -111,6 +111,14 @@
     {
       "query": "Berapa lama masa studi S1?",
       "timestamp": "2026-01-02T20:25:33.604423"
+    },
+    {
+      "query": "Apa syarat kelulusan program S1?",
+      "timestamp": "2026-01-02T21:02:51.739870"
+    },
+    {
+      "query": "Apa syarat magang/KKN?",
+      "timestamp": "2026-01-02T21:03:01.766590"
     }
   ],
   "feedback_history": [

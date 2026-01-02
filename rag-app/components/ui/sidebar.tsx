@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { MessageSquarePlus, Home, Menu, X, MessageCircle, Trash2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useChat } from "@/components/chat-provider"
+import { ThemeToggle } from "@/components/theme-toggle"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
@@ -45,7 +46,7 @@ export function Sidebar() {
                 <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400">
                     AKASIA
                 </h1>
-                <p className="text-xs text-slate-400 mt-1">Asisten Akademik v2.0</p>
+                <p className="text-xs text-slate-400 mt-1">Asisten Akademik v2.4</p>
             </div>
 
             <div className="flex-1 px-4 py-2 space-y-2 overflow-y-auto">
@@ -95,9 +96,10 @@ export function Sidebar() {
                 )}
             </div>
 
-            <div className="p-4 border-t border-white/10">
+            <div className="p-4 space-y-3 border-t border-white/10">
+                <ThemeToggle />
                 <p className="text-xs text-slate-500 text-center">
-                    AKASIA v1.0 © UHO 2025
+                    AKASIA v2.4 © UHO 2025
                 </p>
             </div>
         </>

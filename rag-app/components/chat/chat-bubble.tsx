@@ -12,6 +12,8 @@ import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { User, Sparkles, BookOpen, Shield, ShieldCheck, ShieldAlert, ThumbsUp, ThumbsDown, MessageCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 
 interface ChatBubbleProps {
     role: "user" | "ai"
@@ -218,14 +220,35 @@ export function ChatBubble({
                                     <TypingIndicator />
                                 </motion.div>
                             ) : (
-                                <motion.p
+                                <motion.div
                                     key="content"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}
-                                    className="whitespace-pre-wrap"
+                                    className="prose prose-invert prose-sm max-w-none"
                                 >
-                                    {content}
-                                </motion.p>
+                                    {isAI ? (
+                                        <ReactMarkdown
+                                            remarkPlugins={[remarkGfm]}
+                                            components={{
+                                                h1: ({ children }) => <h3 className="text-lg font-bold text-white mt-3 mb-2">{children}</h3>,
+                                                h2: ({ children }) => <h4 className="text-base font-semibold text-white mt-2 mb-1">{children}</h4>,
+                                                h3: ({ children }) => <h5 className="text-sm font-semibold text-slate-200 mt-2 mb-1">{children}</h5>,
+                                                p: ({ children }) => <p className="text-slate-100 mb-2 leading-relaxed">{children}</p>,
+                                                ul: ({ children }) => <ul className="list-disc pl-4 mb-2 space-y-1 text-slate-200">{children}</ul>,
+                                                ol: ({ children }) => <ol className="list-decimal pl-4 mb-2 space-y-1 text-slate-200">{children}</ol>,
+                                                li: ({ children }) => <li className="text-slate-200">{children}</li>,
+                                                strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
+                                                em: ({ children }) => <em className="italic text-blue-300">{children}</em>,
+                                                code: ({ children }) => <code className="px-1.5 py-0.5 bg-slate-700/50 rounded text-blue-300 text-xs">{children}</code>,
+                                                blockquote: ({ children }) => <blockquote className="border-l-2 border-blue-400 pl-3 italic text-slate-300">{children}</blockquote>,
+                                            }}
+                                        >
+                                            {content}
+                                        </ReactMarkdown>
+                                    ) : (
+                                        <p className="whitespace-pre-wrap">{content}</p>
+                                    )}
+                                </motion.div>
                             )}
                         </AnimatePresence>
                     </motion.div>

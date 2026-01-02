@@ -4,9 +4,10 @@ import * as React from "react"
 import { StatsCard } from "@/components/admin/stats-card"
 import { AnalyticsChart } from "@/components/admin/analytics-chart"
 import { FeedbackDashboard } from "@/components/admin/feedback-dashboard"
+import { QueryTester } from "@/components/admin/query-tester"
 import { UploadZone } from "@/components/admin/upload-zone"
 import { GlassCard } from "@/components/ui/glass-card"
-import { FileText, Database, Activity, Clock, Trash2, RefreshCw, AlertCircle, CheckCircle, ThumbsUp } from "lucide-react"
+import { FileText, Database, Activity, Clock, Trash2, RefreshCw, AlertCircle, CheckCircle, ThumbsUp, Beaker } from "lucide-react"
 
 interface Document {
     id: string
@@ -190,6 +191,17 @@ export default function AdminPage() {
                     User Feedback
                 </h2>
                 <FeedbackDashboard />
+            </div>
+
+            {/* QA Testing Section */}
+            <div className="space-y-6">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <Beaker className="w-5 h-5 text-cyan-400" />
+                    QA Testing
+                </h2>
+                <GlassCard>
+                    <QueryTester />
+                </GlassCard>
             </div>
 
             {/* Upload Zone */}

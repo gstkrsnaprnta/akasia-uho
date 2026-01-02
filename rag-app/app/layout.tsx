@@ -13,11 +13,12 @@ const fontMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AKASIA v2.0 - Asisten Akademik UHO",
+  title: "AKASIA v2.4 - Asisten Akademik UHO",
   description: "Asisten Akademik Berbasis AI untuk Universitas Halu Oleo",
 };
 
 import { ChatProvider } from "@/components/chat-provider";
+import { ThemeProvider } from "@/components/theme-provider";
 
 export default function RootLayout({
   children,
@@ -27,9 +28,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${fontSans.variable} ${fontMono.variable} antialiased aurora-bg min-h-screen`} suppressHydrationWarning>
-        <ChatProvider>
-          {children}
-        </ChatProvider>
+        <ThemeProvider>
+          <ChatProvider>
+            {children}
+          </ChatProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
