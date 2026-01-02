@@ -1,22 +1,22 @@
 {
   "documents": [
     {
-      "id": "a3031950-d8c4-4adb-86ab-6d2d48b82f5c",
+      "id": "86f4b139-ace0-4e07-822a-b32aa4c99e71",
       "filename": "Kalender_ Akdemik 2025_2026.pdf",
       "size_bytes": 2491590,
-      "uploaded_at": "2026-01-02T10:01:55.201705",
+      "uploaded_at": "2026-01-02T10:56:38.563297",
       "status": "indexed",
-      "chunks_count": 23
+      "chunks_count": 17
     },
     {
-      "id": "561edfa6-9715-46e3-833d-7e14e03336e7",
+      "id": "382862a1-e016-4303-83ab-629c75ac0cc1",
       "filename": "Peraturan-Rektor-Nomor-1-Tahun-2019-Tentang-Peraturan-Akademik-UHO.pdf",
       "size_bytes": 822640,
-      "uploaded_at": "2026-01-02T10:02:03.073198",
+      "uploaded_at": "2026-01-02T10:56:44.805900",
       "status": "indexed",
-      "chunks_count": 350
+      "chunks_count": 259
     }
   ],
-  "total_queries": 10,
-  "last_query_at": "2026-01-02T10:02:12.304852"
+  "total_queries": 6,
+  "last_query_at": "2026-01-02T11:24:36.551400"
 }
