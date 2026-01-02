@@ -45,14 +45,14 @@ export function Sidebar() {
                 <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400">
                     AKASIA
                 </h1>
-                <p className="text-xs text-slate-400 mt-1">Asisten Akademik v1.0</p>
+                <p className="text-xs text-slate-400 mt-1">Asisten Akademik v2.0</p>
             </div>
 
             <div className="flex-1 px-4 py-2 space-y-2 overflow-y-auto">
-                <Link href="/" onClick={() => setMobileOpen(false)}>
+                <Link href="/chat" onClick={() => setMobileOpen(false)}>
                     <div className={cn(
                         "flex items-center gap-3 px-4 py-3 rounded-xl transition-all cursor-pointer group",
-                        pathname === "/" ? "bg-white/10 text-white" : "text-slate-400 hover:bg-white/5 hover:text-white"
+                        pathname === "/chat" ? "bg-white/10 text-white" : "text-slate-400 hover:bg-white/5 hover:text-white"
                     )}>
                         <Home className="w-5 h-5 group-hover:text-blue-400" />
                         <span className="font-medium">Chat</span>

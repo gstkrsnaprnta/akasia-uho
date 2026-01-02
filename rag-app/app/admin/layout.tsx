@@ -47,7 +47,7 @@ export default function AdminLayout({
             </div>
 
             <div className="p-4 border-t border-white/10">
-                <Link href="/" onClick={() => setMobileOpen(false)}>
+                <Link href="/chat" onClick={() => setMobileOpen(false)}>
                     <div className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-white cursor-pointer transition-all">
                         <ArrowLeft className="w-5 h-5" />
                         <span className="font-medium">Kembali ke Chat</span>
@@ -97,10 +97,10 @@ export default function AdminLayout({
                 <SidebarContent />
             </motion.div>
 
-            {/* Main content */}
-            <main className="md:pl-64 min-h-screen relative z-10">
+            {/* Main content - no pl-64 here since root layout already has it */}
+            <div className="min-h-screen relative z-10">
                 {children}
-            </main>
+            </div>
         </div>
     )
 }

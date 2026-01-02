@@ -1,210 +1,312 @@
 "use client"
 
 /**
- * Home Page - AKASIA v2.0
- * Halaman utama chat dengan animasi modern
+ * Landing Page - AKASIA v2.0
+ * Halaman pertama yang dilihat pengunjung
  */
 
 import * as React from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { ChatInput } from "@/components/chat/chat-input"
-import { ChatBubble } from "@/components/chat/chat-bubble"
-import { MessageSquare, Sparkles, GraduationCap } from "lucide-react"
-import { useChat } from "@/components/chat-provider"
+import Link from "next/link"
+import { motion } from "framer-motion"
+import {
+    GraduationCap, MessageSquare, FileText, BarChart3,
+    Sparkles, ArrowRight, BookOpen, Clock, Shield, Zap,
+    ChevronRight
+} from "lucide-react"
 
 // Animation variants
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.2 }
-  }
+const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({
+        opacity: 1,
+        y: 0,
+        transition: { delay: i * 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }
+    })
 }
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { type: "spring", stiffness: 300, damping: 25 }
-  }
-}
-
-const questionVariants = {
-  hidden: { opacity: 0, x: -20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    x: 0,
-    transition: {
-      delay: 0.4 + (i * 0.1),
-      type: "spring",
-      stiffness: 300,
-      damping: 25
+const features = [
+    {
+        icon: MessageSquare,
+        title: "Chat AI Interaktif",
+        description: "Tanyakan apa saja tentang peraturan akademik dan dapatkan jawaban instan",
+        color: "from-blue-500 to-cyan-500"
+    },
+    {
+        icon: BookOpen,
+        title: "Knowledge Base",
+        description: "Didukung oleh dokumen resmi Peraturan Rektor dan Kalender Akademik UHO",
+        color: "from-purple-500 to-pink-500"
+    },
+    {
+        icon: Zap,
+        title: "Respons Cepat",
+        description: "Jawaban akurat dalam hitungan detik dengan teknologi RAG terkini",
+        color: "from-amber-500 to-orange-500"
+    },
+    {
+        icon: Shield,
+        title: "Akurat & Terpercaya",
+        description: "Setiap jawaban dilengkapi sumber referensi Pasal yang jelas",
+        color: "from-green-500 to-emerald-500"
     }
-  }),
-  hover: {
-    scale: 1.02,
-    y: -4,
-    boxShadow: "0 10px 30px rgba(139, 92, 246, 0.15)",
-    transition: { type: "spring", stiffness: 400, damping: 20 }
-  },
-  tap: { scale: 0.98 }
-}
+]
 
-export default function Home() {
-  const { messages, isTyping, sendMessage } = useChat()
-  const messagesEndRef = React.useRef<HTMLDivElement>(null)
+const stats = [
+    { value: "2+", label: "Dokumen Akademik" },
+    { value: "276", label: "Knowledge Chunks" },
+    { value: "24/7", label: "Tersedia" },
+    { value: "< 3s", label: "Waktu Respons" }
+]
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
-
-  React.useEffect(() => {
-    scrollToBottom()
-  }, [messages, isTyping])
-
-  const handleSend = (content: string) => {
-    sendMessage(content)
-  }
-
-  const suggestedQuestions = [
-    { text: "Berapa masa studi maksimal S1?", icon: "📚" },
-    { text: "Bagaimana prosedur cuti akademik?", icon: "📋" },
-    { text: "Apa syarat kelulusan cum laude?", icon: "🎓" },
-    { text: "Berapa SKS yang harus ditempuh D3?", icon: "📊" }
-  ]
-
-  return (
-    <div className="flex flex-col h-screen max-w-4xl mx-auto px-4 pt-16 md:pt-8 pb-32">
-      <div className="flex-1 overflow-y-auto scrollbar-hide py-4">
-        <AnimatePresence mode="wait">
-          {messages.length === 0 ? (
-            /* Empty State - Welcome Screen */
-            <motion.div
-              key="welcome"
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="flex flex-col items-center justify-center h-full text-center space-y-8 py-12"
-            >
-              {/* Animated Logo */}
-              <motion.div
-                variants={itemVariants}
-                className="relative"
-              >
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur-2xl opacity-30"
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.2, 0.4, 0.2]
-                  }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                />
-                <div className="relative p-6 rounded-full bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-white/10 backdrop-blur-sm">
-                  <GraduationCap className="w-14 h-14 text-blue-400" />
-                </div>
-              </motion.div>
-
-              {/* Title & Description */}
-              <motion.div variants={itemVariants} className="space-y-4">
-                <h1 className="text-4xl md:text-5xl font-bold gradient-text">
-                  AKASIA
-                </h1>
-                <p className="text-slate-400 text-lg max-w-lg leading-relaxed">
-                  Asisten Akademik AI untuk Universitas Halu Oleo
-                </p>
-                <p className="text-slate-500 text-sm">
-                  Tanyakan seputar peraturan akademik, kalender, dan informasi kampus
-                </p>
-              </motion.div>
-
-              {/* Suggested Questions Grid */}
-              <motion.div
-                variants={itemVariants}
-                className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-2xl mt-6"
-              >
-                {suggestedQuestions.map((question, i) => (
-                  <motion.button
-                    key={i}
-                    custom={i}
-                    variants={questionVariants}
-                    initial="hidden"
-                    animate="visible"
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={() => sendMessage(question.text)}
-                    className="p-4 text-left text-sm bg-slate-900/50 hover:bg-slate-800/60 border border-slate-700/50 rounded-xl text-slate-300 hover:text-white backdrop-blur-sm group transform-gpu"
-                  >
-                    <span className="text-xl mb-2 block">{question.icon}</span>
-                    <span className="font-medium">{question.text}</span>
+export default function LandingPage() {
+    return (
+        <div className="min-h-screen overflow-hidden">
+            {/* Hero Section */}
+            <section className="relative min-h-screen flex items-center justify-center px-6">
+                {/* Animated Background Orbs */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
                     <motion.div
-                      className="mt-2 flex items-center gap-1 text-xs text-purple-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl"
+                        animate={{
+                            x: [0, 50, 0],
+                            y: [0, 30, 0],
+                            scale: [1, 1.1, 1]
+                        }}
+                        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                    <motion.div
+                        className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl"
+                        animate={{
+                            x: [0, -40, 0],
+                            y: [0, -20, 0],
+                            scale: [1, 1.15, 1]
+                        }}
+                        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+                    />
+                </div>
+
+                <div className="relative z-10 max-w-5xl mx-auto text-center">
+                    {/* Badge */}
+                    <motion.div
+                        custom={0}
+                        variants={fadeUp}
+                        initial="hidden"
+                        animate="visible"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-sm mb-8"
                     >
-                      <Sparkles className="w-3 h-3" />
-                      <span>Klik untuk bertanya</span>
+                        <Sparkles className="w-4 h-4" />
+                        <span>Powered by AI & RAG Technology</span>
                     </motion.div>
-                  </motion.button>
-                ))}
-              </motion.div>
-            </motion.div>
-          ) : (
-            /* Chat Messages View */
-            <motion.div
-              key="chat"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="space-y-4"
-            >
-              {/* Header */}
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-center mb-6 mt-2 space-y-1"
-              >
-                <h1 className="text-2xl font-bold gradient-text">
-                  AKASIA
-                </h1>
-                <p className="text-slate-500 text-xs">
-                  Asisten Akademik v2.0
-                </p>
-              </motion.div>
 
-              {/* Messages */}
-              {messages.map((msg, i) => (
-                <ChatBubble
-                  key={i}
-                  role={msg.role}
-                  content={msg.content}
-                  citations={msg.citations}
-                />
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
+                    {/* Main Title */}
+                    <motion.h1
+                        custom={1}
+                        variants={fadeUp}
+                        initial="hidden"
+                        animate="visible"
+                        className="text-5xl md:text-7xl font-bold mb-6"
+                    >
+                        <span className="gradient-text">AKASIA</span>
+                    </motion.h1>
 
-        {/* Typing Indicator */}
-        <AnimatePresence>
-          {isTyping && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-            >
-              <ChatBubble role="ai" content="" isTyping={true} />
-            </motion.div>
-          )}
-        </AnimatePresence>
+                    <motion.p
+                        custom={2}
+                        variants={fadeUp}
+                        initial="hidden"
+                        animate="visible"
+                        className="text-xl md:text-2xl text-slate-300 mb-4"
+                    >
+                        Asisten Akademik Sistem Informasi Answering
+                    </motion.p>
 
-        <div ref={messagesEndRef} />
-      </div>
+                    <motion.p
+                        custom={3}
+                        variants={fadeUp}
+                        initial="hidden"
+                        animate="visible"
+                        className="text-lg text-slate-400 max-w-2xl mx-auto mb-10"
+                    >
+                        Chatbot AI untuk menjawab pertanyaan seputar peraturan akademik
+                        Universitas Halu Oleo dengan cepat dan akurat
+                    </motion.p>
 
-      <ChatInput onSend={handleSend} />
-    </div>
-  )
+                    {/* CTA Buttons */}
+                    <motion.div
+                        custom={4}
+                        variants={fadeUp}
+                        initial="hidden"
+                        animate="visible"
+                        className="flex flex-col sm:flex-row gap-4 justify-center"
+                    >
+                        <Link href="/chat">
+                            <motion.button
+                                className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-semibold shadow-lg shadow-purple-500/25 flex items-center gap-2 justify-center"
+                                whileHover={{ scale: 1.02, boxShadow: "0 20px 40px rgba(139, 92, 246, 0.3)" }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <MessageSquare className="w-5 h-5" />
+                                Mulai Chat
+                                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                            </motion.button>
+                        </Link>
+                        <Link href="/admin">
+                            <motion.button
+                                className="px-8 py-4 bg-white/5 border border-white/10 rounded-xl text-white font-semibold flex items-center gap-2 justify-center hover:bg-white/10 transition-colors"
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                            >
+                                <BarChart3 className="w-5 h-5" />
+                                Admin Dashboard
+                            </motion.button>
+                        </Link>
+                    </motion.div>
+
+                    {/* Stats */}
+                    <motion.div
+                        custom={5}
+                        variants={fadeUp}
+                        initial="hidden"
+                        animate="visible"
+                        className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16 max-w-3xl mx-auto"
+                    >
+                        {stats.map((stat, i) => (
+                            <div key={i} className="text-center">
+                                <div className="text-3xl md:text-4xl font-bold gradient-text">{stat.value}</div>
+                                <div className="text-sm text-slate-400 mt-1">{stat.label}</div>
+                            </div>
+                        ))}
+                    </motion.div>
+                </div>
+
+                {/* Scroll Indicator */}
+                <motion.div
+                    className="absolute bottom-8 left-1/2 -translate-x-1/2"
+                    animate={{ y: [0, 10, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                >
+                    <ChevronRight className="w-6 h-6 rotate-90 text-slate-500" />
+                </motion.div>
+            </section>
+
+            {/* Features Section */}
+            <section className="py-24 px-6 relative">
+                <div className="max-w-6xl mx-auto">
+                    <motion.div
+                        className="text-center mb-16"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                    >
+                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                            Fitur Unggulan
+                        </h2>
+                        <p className="text-slate-400 max-w-2xl mx-auto">
+                            AKASIA dilengkapi dengan teknologi AI terkini untuk membantu mahasiswa
+                            mendapatkan informasi akademik dengan mudah
+                        </p>
+                    </motion.div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {features.map((feature, i) => (
+                            <motion.div
+                                key={i}
+                                className="p-6 rounded-2xl bg-slate-900/50 border border-slate-800/50 backdrop-blur-sm group hover:border-slate-700/50 transition-colors"
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                                whileHover={{ y: -5 }}
+                            >
+                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                                    <feature.icon className="w-6 h-6 text-white" />
+                                </div>
+                                <h3 className="text-lg font-semibold text-white mb-2">{feature.title}</h3>
+                                <p className="text-sm text-slate-400">{feature.description}</p>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* Demo Preview Section */}
+            <section className="py-24 px-6 relative">
+                <div className="max-w-5xl mx-auto">
+                    <motion.div
+                        className="rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700/50 p-8 md:p-12 overflow-hidden relative"
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                    >
+                        {/* Glow Effect */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
+
+                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
+                            <div className="flex-1">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/20 text-green-400 text-xs mb-4">
+                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                    System Online
+                                </div>
+                                <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">
+                                    Siap Menjawab Pertanyaan Anda
+                                </h3>
+                                <p className="text-slate-400 mb-6">
+                                    Coba tanyakan tentang masa studi, syarat kelulusan, prosedur cuti akademik,
+                                    atau jadwal kalender akademik UHO.
+                                </p>
+                                <Link href="/chat">
+                                    <motion.button
+                                        className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl text-white font-medium flex items-center gap-2"
+                                        whileHover={{ scale: 1.02 }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        Coba Sekarang
+                                        <ArrowRight className="w-4 h-4" />
+                                    </motion.button>
+                                </Link>
+                            </div>
+
+                            {/* Chat Preview */}
+                            <div className="flex-1 w-full">
+                                <div className="bg-slate-950/80 rounded-2xl border border-slate-700/50 p-4 space-y-4">
+                                    <div className="flex gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0">
+                                            <GraduationCap className="w-4 h-4 text-slate-400" />
+                                        </div>
+                                        <div className="bg-slate-800/50 rounded-xl rounded-tl-none px-4 py-3 text-sm text-slate-300">
+                                            Berapa masa studi maksimal S1?
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center shrink-0">
+                                            <Sparkles className="w-4 h-4 text-white" />
+                                        </div>
+                                        <div className="bg-slate-800/30 rounded-xl rounded-tl-none px-4 py-3 text-sm text-slate-200">
+                                            Masa studi maksimal S1 adalah 7 tahun akademik dengan beban studi minimal 144 SKS.
+                                            <span className="text-blue-400"> [Sumber: Pasal 44]</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* Footer */}
+            <footer className="py-12 px-6 border-t border-slate-800/50">
+                <div className="max-w-5xl mx-auto text-center">
+                    <div className="flex items-center justify-center gap-2 mb-4">
+                        <GraduationCap className="w-6 h-6 text-purple-400" />
+                        <span className="text-xl font-bold gradient-text">AKASIA</span>
+                    </div>
+                    <p className="text-slate-500 text-sm mb-4">
+                        Asisten Akademik Berbasis AI untuk Universitas Halu Oleo
+                    </p>
+                    <p className="text-slate-600 text-xs">
+                        © 2025 AKASIA v2.0 • Built with Next.js, FastAPI & LangChain
+                    </p>
+                </div>
+            </footer>
+        </div>
+    )
 }

@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Roboto_Mono } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/ui/sidebar";
 
 const fontSans = Inter({
   subsets: ["latin"],
@@ -14,7 +13,7 @@ const fontMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AKASIA v1.0 - Asisten Akademik UHO",
+  title: "AKASIA v2.0 - Asisten Akademik UHO",
   description: "Asisten Akademik Berbasis AI untuk Universitas Halu Oleo",
 };
 
@@ -29,10 +28,7 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${fontSans.variable} ${fontMono.variable} antialiased aurora-bg min-h-screen`} suppressHydrationWarning>
         <ChatProvider>
-          <Sidebar />
-          <main className="md:pl-64 min-h-screen relative z-10">
-            {children}
-          </main>
+          {children}
         </ChatProvider>
       </body>
     </html>

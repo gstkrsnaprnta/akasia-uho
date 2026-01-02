@@ -17,6 +17,28 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 14,
-  "last_query_at": "2026-01-02T12:00:57.613663"
+  "total_queries": 19,
+  "last_query_at": "2026-01-02T12:49:10.917703",
+  "query_history": [
+    {
+      "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
+      "timestamp": "2026-01-02T12:46:26.166757"
+    },
+    {
+      "query": "Hallo",
+      "timestamp": "2026-01-02T12:47:09.088232"
+    },
+    {
+      "query": "Berapa SKS bobot untuk kegiatan KKN?",
+      "timestamp": "2026-01-02T12:47:40.253062"
+    },
+    {
+      "query": "Sebutkan rentang nilai angka untuk mendapatkan Nilai Huruf A",
+      "timestamp": "2026-01-02T12:48:30.340288"
+    },
+    {
+      "query": "Berapa nilai angka minimal untuk mendapatkan Nilai Huruf B?",
+      "timestamp": "2026-01-02T12:49:10.917720"
+    }
+  ]
 }

@@ -107,7 +107,7 @@ export default function AdminPage() {
     }
 
     return (
-        <div className="p-8 pb-32 space-y-8 max-w-7xl mx-auto">
+        <div className="p-6 lg:p-8 pb-32 space-y-8">
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
