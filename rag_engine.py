@@ -51,6 +51,12 @@ class RAGEngine:
         self._init_cross_encoder()
         self._build_bm25_index()
         
+        # v2.3: Response caching for instant responses
+        self.response_cache = {}  # query_hash -> {response, citations, confidence, timestamp}
+        self.cache_max_size = 100  # Max cached responses
+        self.cache_ttl = 3600  # Cache time-to-live in seconds (1 hour)
+        self.cache_stats = {"hits": 0, "misses": 0}
+        
         # Auto-load documents from data folder on startup
         self._auto_load_documents()
     
@@ -791,6 +797,34 @@ class RAGEngine:
         question_expanded = self._apply_synonym_mapping(question)
         
         # ========================================
+        # v2.3: Check Response Cache
+        # ========================================
+        import hashlib
+        from time import time
+        
+        query_hash = hashlib.md5(question.lower().strip().encode()).hexdigest()
+        
+        if query_hash in self.response_cache:
+            cached = self.response_cache[query_hash]
+            # Check if cache is still valid (within TTL)
+            if time() - cached["timestamp"] < self.cache_ttl:
+                self.cache_stats["hits"] += 1
+                print(f"  ⚡ CACHE HIT for: {question[:50]}...")
+                # Return cached response
+                yield {"confidence": cached["confidence"]}
+                yield {"citations": cached["citations"]}
+                for char in cached["response"]:
+                    yield {"response": char}
+                if cached.get("related_questions"):
+                    yield {"related_questions": cached["related_questions"]}
+                return
+            else:
+                # Cache expired, remove it
+                del self.response_cache[query_hash]
+        
+        self.cache_stats["misses"] += 1
+        
+        # ========================================
         # STAGE 1: Hybrid Search (Semantic + BM25)
         # ========================================
         try:
@@ -882,14 +916,32 @@ Instruksi: Cari jawaban di REFERENSI di atas. Jika ditemukan, jawab SINGKAT deng
         
         try:
             stream = self._call_llm(messages, stream=True)
+            full_response = ""  # Collect for caching
+            
             for chunk in stream:
                 if chunk.choices[0].delta.content:
-                    yield {"response": chunk.choices[0].delta.content}
+                    content = chunk.choices[0].delta.content
+                    full_response += content
+                    yield {"response": content}
             
             # v2.2: Generate related questions after response
             related = self._generate_related_questions(question, reranked_docs)
             if related:
                 yield {"related_questions": related}
+            
+            # v2.3: Save to cache
+            # Evict oldest if cache full
+            if len(self.response_cache) >= self.cache_max_size:
+                oldest_key = min(self.response_cache, key=lambda k: self.response_cache[k]["timestamp"])
+                del self.response_cache[oldest_key]
+            
+            self.response_cache[query_hash] = {
+                "response": full_response,
+                "citations": citations,
+                "confidence": confidence,
+                "related_questions": related,
+                "timestamp": time()
+            }
                 
         except Exception as e:
             yield {"response": f"Error: {str(e)}"}

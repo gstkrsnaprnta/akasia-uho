@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 30,
-  "last_query_at": "2026-01-02T20:05:44.063124",
+  "total_queries": 37,
+  "last_query_at": "2026-01-02T20:25:33.604401",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -83,6 +83,34 @@
     {
       "query": "Berapa lama masa studi S1?",
       "timestamp": "2026-01-02T20:05:44.063136"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-02T20:08:47.393783"
+    },
+    {
+      "query": "Apa sanksi jika melebihi masa studi maksimal?",
+      "timestamp": "2026-01-02T20:09:02.192228"
+    },
+    {
+      "query": "Berapa SKS minimum per semester?",
+      "timestamp": "2026-01-02T20:09:18.844613"
+    },
+    {
+      "query": "Berapa beban SKS maksimal per semester?",
+      "timestamp": "2026-01-02T20:09:28.490840"
+    },
+    {
+      "query": "Bagaimana konversi nilai ke huruf?",
+      "timestamp": "2026-01-02T20:09:50.490435"
+    },
+    {
+      "query": "Berapa lama masa studi S1?",
+      "timestamp": "2026-01-02T20:25:30.716514"
+    },
+    {
+      "query": "Berapa lama masa studi S1?",
+      "timestamp": "2026-01-02T20:25:33.604423"
     }
   ],
   "feedback_history": [
@@ -92,10 +120,24 @@
       "rating": "up",
       "confidence": 75,
       "timestamp": "2026-01-02T20:07:36.069465"
+    },
+    {
+      "query": "Bagaimana konversi nilai ke huruf?",
+      "response": "Konversi nilai ke huruf dapat dilihat pada Pasal 67, BAB XXIX, Sumber: Peraturan-Rektor-Nomor-1-Tahun-2019-Tentang-Peraturan-Akademik-UHO.pdf.\n\n- Nilai \u226581 = A (Sangat Baik)\n- Nilai 66-80 = B (Baik)\n- Nilai 51-65 = C (Cukup)\n- Nilai 36-50 = D (Kurang)\n- Nilai \u226435 = E (Sangat Kurang)\n\n[Sumber: Pasal 67, BAB XXIX]",
+      "rating": "up",
+      "confidence": 78,
+      "timestamp": "2026-01-02T20:10:41.856744"
+    },
+    {
+      "query": "Bagaimana konversi nilai ke huruf?",
+      "response": "Konversi nilai ke huruf dapat dilihat pada Pasal 67, BAB XXIX, Sumber: Peraturan-Rektor-Nomor-1-Tahun-2019-Tentang-Peraturan-Akademik-UHO.pdf.\n\n- Nilai \u226581 = A (Sangat Baik)\n- Nilai 66-80 = B (Baik)\n- Nilai 51-65 = C (Cukup)\n- Nilai 36-50 = D (Kurang)\n- Nilai \u226435 = E (Sangat Kurang)\n\n[Sumber: Pasal 67, BAB XXIX]",
+      "rating": "up",
+      "confidence": 78,
+      "timestamp": "2026-01-02T20:10:44.050275"
     }
   ],
   "feedback_stats": {
-    "thumbs_up": 1,
+    "thumbs_up": 3,
     "thumbs_down": 0
   }
 }

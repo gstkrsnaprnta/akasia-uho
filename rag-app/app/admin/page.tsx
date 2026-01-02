@@ -3,9 +3,10 @@
 import * as React from "react"
 import { StatsCard } from "@/components/admin/stats-card"
 import { AnalyticsChart } from "@/components/admin/analytics-chart"
+import { FeedbackDashboard } from "@/components/admin/feedback-dashboard"
 import { UploadZone } from "@/components/admin/upload-zone"
 import { GlassCard } from "@/components/ui/glass-card"
-import { FileText, Database, Activity, Clock, Trash2, RefreshCw, AlertCircle, CheckCircle } from "lucide-react"
+import { FileText, Database, Activity, Clock, Trash2, RefreshCw, AlertCircle, CheckCircle, ThumbsUp } from "lucide-react"
 
 interface Document {
     id: string
@@ -180,6 +181,15 @@ export default function AdminPage() {
                     Analytics Dashboard
                 </h2>
                 <AnalyticsChart />
+            </div>
+
+            {/* Feedback Analytics Section */}
+            <div className="space-y-6">
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                    <ThumbsUp className="w-5 h-5 text-emerald-400" />
+                    User Feedback
+                </h2>
+                <FeedbackDashboard />
             </div>
 
             {/* Upload Zone */}
