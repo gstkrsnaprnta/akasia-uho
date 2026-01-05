@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 77,
-  "last_query_at": "2026-01-05T14:57:41.763248",
+  "total_queries": 93,
+  "last_query_at": "2026-01-05T21:29:22.739641",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -271,6 +271,70 @@
     {
       "query": "PLT ",
       "timestamp": "2026-01-05T14:57:41.763278"
+    },
+    {
+      "query": "Kapan jadwal pembayaran SPP/UKT untuk mahasiswa ongoing pada Semester Gasal 2025.1",
+      "timestamp": "2026-01-05T15:00:38.251846"
+    },
+    {
+      "query": "Kapan pengisian KRS online Semester Gasal 2025.1 dilaksanakan?",
+      "timestamp": "2026-01-05T15:01:00.086773"
+    },
+    {
+      "query": "Tanggal berapa masa perkuliahan Semester Gasal 2025.1 dimulai?",
+      "timestamp": "2026-01-05T21:13:21.589549"
+    },
+    {
+      "query": "Kapan batas akhir masa perkuliahan Semester Gasal 2025.1?",
+      "timestamp": "2026-01-05T21:13:49.809829"
+    },
+    {
+      "query": "Kapan jadwal modifikasi KRS online untuk Semester Gasal 2025.1?",
+      "timestamp": "2026-01-05T21:14:05.252037"
+    },
+    {
+      "query": "Kapan Ujian Tengah Semester (UTS) Semester Gasal 2025.1 dilaksanakan?",
+      "timestamp": "2026-01-05T21:15:05.048296"
+    },
+    {
+      "query": "Kapan UTS Semester Gasal 2025.1",
+      "timestamp": "2026-01-05T21:16:04.878448"
+    },
+    {
+      "query": "Kapan Ujian Tengah Semester (UTS) Semester Gasal 2025.1 dilaksanakan?",
+      "timestamp": "2026-01-05T21:21:21.026239"
+    },
+    {
+      "query": "Kapan Ujian Tengah Semester (UTS) Semester Gasal 2025.1 dilaksanakan?",
+      "timestamp": "2026-01-05T21:25:14.038572"
+    },
+    {
+      "query": "Kapan Ujian Tengah Semester (UTS) Semester Gasal 2025.1 dilaksanakan? Maaf, informasi mengenai Ujian Tengah Semester (UTS) Semester Gasal 2025.1 tidak ditemukan dalam dokumen. Silakan hubungi Bagian Akademik UHO.  83% \u2022 Tinggi Kalender_ Akdemik 2025_2026.pdf, Kalender Akademik... Kalender_ Akdemik 2025_2026.pdf, Kalender Akademik... Kalender_ Akdemik 2025_2026.pdf, Kalender Akademik... Apakah jawaban ini membantu?   Pertanyaan terkait: Apa syarat kelulusan program S1? Bagaimana prosedur pengajuan surat keterangan? Siapa yang bisa dihubungi untuk konsultasi akademik? Kapan UTS Semester Gasal 2025.1 UTS Semester Gasal 2025.1 dilaksanakan pada tanggal 20/10/2025 - 24/10/2025. [Sumber: BAGIAN 5, Kalender Akademik]",
+      "timestamp": "2026-01-05T21:25:20.006414"
+    },
+    {
+      "query": "Kapan Ujian Tengah Semester (UTS) Semester Gasal 2025.1 dilaksanakan?",
+      "timestamp": "2026-01-05T21:26:01.445227"
+    },
+    {
+      "query": "Kapan (UTS) Semester Gasal 2025.1 dilaksanakan?",
+      "timestamp": "2026-01-05T21:26:13.554093"
+    },
+    {
+      "query": "Jadwal UTS semester gasal 2025.1",
+      "timestamp": "2026-01-05T21:26:51.723872"
+    },
+    {
+      "query": "Kapan jadwal Wisuda periode Juli - Oktober 2025?",
+      "timestamp": "2026-01-05T21:28:49.992631"
+    },
+    {
+      "query": "Tanggal berapa pelaksanaan PEMIRA tahun 2025?",
+      "timestamp": "2026-01-05T21:29:09.702275"
+    },
+    {
+      "query": "Apa syarat kelulusan program S1?",
+      "timestamp": "2026-01-05T21:29:22.739679"
     }
   ],
   "feedback_history": [

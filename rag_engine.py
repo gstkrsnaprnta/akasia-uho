@@ -191,24 +191,40 @@ class RAGEngine:
                         break
                 
                 # v2.6: Semester date detection for calendar queries
-                # Gasal 2025.1 = Aug-Dec 2025 (dates like /08/2025, /09/2025, ... or /01/2026 for end)
-                # Genap 2025.2 = Feb-Jun 2026 (dates like /02/2026, /03/2026, ...)
-                # Antara 2025.3 = Jul-Aug 2026 (dates like /07/2026, /08/2026)
+                # Gasal 2025.1 = Aug-Dec 2025 (dates with /08/2025 - /12/2025 or /01/2026)
+                # Genap 2025.2 = Feb-Jun 2026 (dates with /02/2026 - /06/2026)
                 import re
                 if 'gasal' in query_lower or '2025.1' in query_lower:
-                    # Look for Gasal dates: Aug-Dec 2025
+                    # Look for Gasal dates: Aug 2025 - Jan 2026
                     gasal_dates = re.findall(r'/(?:0[789]|1[012])/2025|/01/2026', doc_content)
                     genap_dates = re.findall(r'/0[2-6]/2026', doc_content)
-                    if gasal_dates and not genap_dates:
-                        boost += 4.0  # Correct semester
-                    elif genap_dates and not gasal_dates:
-                        boost -= 4.0  # Wrong semester
+                    gasal_count = len(gasal_dates)
+                    genap_count = len(genap_dates)
+                    
+                    if gasal_count > 0 and genap_count == 0:
+                        boost += 6.0  # Pure Gasal doc
+                    elif gasal_count > genap_count:
+                        ratio = gasal_count / (gasal_count + genap_count)
+                        boost += 4.0 * ratio  # Mostly Gasal
+                    elif genap_count > 0 and gasal_count == 0:
+                        boost -= 6.0  # Pure Genap = wrong semester
+                    elif genap_count > gasal_count:
+                        boost -= 4.0  # Mostly Genap
+                        
                 elif 'genap' in query_lower or '2025.2' in query_lower:
                     gasal_dates = re.findall(r'/(?:0[789]|1[012])/2025', doc_content)
                     genap_dates = re.findall(r'/0[2-6]/2026', doc_content)
-                    if genap_dates and not gasal_dates:
-                        boost += 4.0
-                    elif gasal_dates and not genap_dates:
+                    gasal_count = len(gasal_dates)
+                    genap_count = len(genap_dates)
+                    
+                    if genap_count > 0 and gasal_count == 0:
+                        boost += 6.0
+                    elif genap_count > gasal_count:
+                        ratio = genap_count / (gasal_count + genap_count)
+                        boost += 4.0 * ratio
+                    elif gasal_count > 0 and genap_count == 0:
+                        boost -= 6.0
+                    elif gasal_count > genap_count:
                         boost -= 4.0
                 
                 boosted_scores.append(float(score) + boost)
@@ -887,7 +903,7 @@ class RAGEngine:
         # STAGE 1: v2.6 Multi-Query Retrieval
         # ========================================
         try:
-            hybrid_results = self._multi_query_retrieval(question, k=30, alpha=0.7)
+            hybrid_results = self._multi_query_retrieval(question, k=50, alpha=0.7)
         except Exception as e:
             print(f"  ⚠️ Multi-query retrieval failed, falling back to hybrid: {e}")
             try:
