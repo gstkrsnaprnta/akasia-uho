@@ -144,7 +144,10 @@ class RAGEngine:
             self.cross_encoder = None
     
     def _cross_encoder_rerank(self, query, docs, top_k=10):
-        """Re-rank documents using cross-encoder neural model"""
+        """
+        v2.6: Re-rank documents using cross-encoder neural model
+        with query-aware term boosting for S1/S2/S3/D3/D4 mappings
+        """
         if not self.cross_encoder or not docs:
             return docs[:top_k]
         
@@ -155,11 +158,45 @@ class RAGEngine:
             # Get cross-encoder scores
             scores = self.cross_encoder.predict(pairs)
             
+            # v2.6: Query-aware term boosting
+            query_lower = query.lower()
+            boost_mappings = {
+                's1': {'match': ['program sarjana', 'sarjana'], 'exclude': ['magister', 'doktor']},
+                's2': {'match': ['program magister', 'magister'], 'exclude': ['doktor']},
+                's3': {'match': ['program doktor', 'doktor'], 'exclude': []},
+                'd3': {'match': ['diploma 3', 'diploma tiga'], 'exclude': []},
+                'd4': {'match': ['diploma 4', 'diploma empat', 'sarjana terapan'], 'exclude': []},
+            }
+            
+            boosted_scores = []
+            for i, score in enumerate(scores):
+                boost = 0.0
+                doc_content = docs[i][0].page_content.lower()
+                
+                # Check if query contains a program code
+                for code, config in boost_mappings.items():
+                    if code in query_lower:
+                        has_match = any(term in doc_content for term in config['match'])
+                        has_exclude = any(term in doc_content for term in config['exclude'])
+                        
+                        if has_match and not has_exclude:
+                            # Perfect match: has target program, no conflicting programs
+                            boost = 5.0
+                        elif has_match and has_exclude:
+                            # Mixed doc: has target but also has other programs (e.g., "S1 for magister")
+                            boost = -5.0  # Strong penalize to outweigh high CE
+                        elif has_exclude:
+                            # Wrong program entirely
+                            boost = -4.0
+                        break
+                
+                boosted_scores.append(float(score) + boost)
+            
             # Combine with original docs
-            scored_docs = [(docs[i][0], docs[i][1], docs[i][2], float(scores[i])) 
+            scored_docs = [(docs[i][0], docs[i][1], docs[i][2], boosted_scores[i]) 
                           for i in range(len(docs))]
             
-            # Sort by cross-encoder score (higher is better)
+            # Sort by boosted cross-encoder score (higher is better)
             scored_docs.sort(key=lambda x: x[3], reverse=True)
             
             return scored_docs[:top_k]
@@ -887,9 +924,10 @@ Cari dan berikan jawaban dari REFERENSI yang diberikan. Dokumen berisi Peraturan
 
 CARA MENJAWAB:
 1. CARI dengan teliti di semua bagian REFERENSI
-2. Jika menemukan informasi yang relevan, berikan jawaban dengan jelas
-3. Sertakan nomor Pasal atau sumber dokumen
-4. Jawab dalam 1-3 kalimat ringkas
+2. GUNAKAN PEMETAAN ISTILAH di bawah untuk mencari (contoh: jika user tanya "S1", cari "program sarjana")
+3. Jika menemukan informasi yang relevan, berikan jawaban dengan jelas
+4. Sertakan nomor Pasal atau sumber dokumen
+5. Jawab dalam 1-3 kalimat ringkas
 
 PEMETAAN SEMESTER (PENTING):
 - Semester Gasal 2025.1 = SEMESTER GASAL tahun 2025 (mulai Agustus 2025)
@@ -901,12 +939,21 @@ CARA BACA KALENDER AKADEMIK:
 - Contoh: "5 | Penawaran mata kuliah /pengisian KRS | 01/08/2025 | 25/08/2025"
 - Jika ada 2 tanggal berurutan = periode mulai dan selesai
 
-PEMETAAN ISTILAH:
-- S1 = Program Sarjana
-- D3 = Diploma III / Vokasi
+PEMETAAN ISTILAH (GUNAKAN UNTUK MENCARI):
+- S1 = "program sarjana" = "sarjana"
+- S2 = "program magister" = "magister" 
+- S3 = "program doktor" = "doktor"
+- D3 = "diploma 3" = "diploma tiga"
+- D4 = "diploma 4" = "diploma empat" = "sarjana terapan"
+- "masa studi" = "beban studi" = "ditempuh paling lama"
+- "masa studi maksimal" = "ditempuh paling lama"
 - SKS = Satuan Kredit Semester
 - KRS = Kartu Rencana Studi
 - SPP/UKT = Uang Kuliah Tunggal
+
+CONTOH PENCARIAN:
+- User: "masa studi S1" → Cari: "program sarjana" dan "ditempuh paling lama"
+- User: "syarat lulus" → Cari: "kelulusan" atau "yudisium"
 
 FORMAT JAWABAN:
 "[Jawaban lengkap]. [Sumber: Pasal XX / Kalender Akademik]"

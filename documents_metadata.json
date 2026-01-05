@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 63,
-  "last_query_at": "2026-01-05T14:31:34.967912",
+  "total_queries": 72,
+  "last_query_at": "2026-01-05T14:50:02.961725",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -215,6 +215,42 @@
     {
       "query": "Kapan pengisian KRS online Semester Gasal 2025.1 dilaksanakan?",
       "timestamp": "2026-01-05T14:31:34.967953"
+    },
+    {
+      "query": "Kapan jadwal pengisian KRS?",
+      "timestamp": "2026-01-05T14:34:51.174557"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-05T14:36:27.110174"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-05T14:39:28.363093"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-05T14:42:11.957898"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-05T14:47:21.426341"
+    },
+    {
+      "query": "Tanggal berapa masa perkuliahan Semester Gasal 2025.1 dimulai?",
+      "timestamp": "2026-01-05T14:48:18.081499"
+    },
+    {
+      "query": "Kapan batas akhir masa perkuliahan Semester Gasal 2025.1?",
+      "timestamp": "2026-01-05T14:48:30.436046"
+    },
+    {
+      "query": "Kapan jadwal modifikasi KRS online untuk Semester Gasal 2025.1?",
+      "timestamp": "2026-01-05T14:49:17.346354"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-05T14:50:02.961777"
     }
   ],
   "feedback_history": [
