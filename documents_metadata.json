@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 46,
-  "last_query_at": "2026-01-02T21:39:22.657250",
+  "total_queries": 53,
+  "last_query_at": "2026-01-05T12:24:24.820909",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -147,6 +147,34 @@
     {
       "query": "Berapa SKS minimum per semester?",
       "timestamp": "2026-01-02T21:39:22.657295"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-05T12:07:52.981996"
+    },
+    {
+      "query": "Apa sanksi jika melebihi masa studi maksimal?",
+      "timestamp": "2026-01-05T12:08:14.606900"
+    },
+    {
+      "query": "Berapa SKS minimum per semester?",
+      "timestamp": "2026-01-05T12:08:24.041273"
+    },
+    {
+      "query": "Bagaimana konversi nilai ke huruf?",
+      "timestamp": "2026-01-05T12:08:32.710816"
+    },
+    {
+      "query": "Kapan UAS ?",
+      "timestamp": "2026-01-05T12:09:16.724993"
+    },
+    {
+      "query": "Kpn dia kembali ke pelukanku?",
+      "timestamp": "2026-01-05T12:23:29.599907"
+    },
+    {
+      "query": "Syarat lulus cum laude?",
+      "timestamp": "2026-01-05T12:24:24.821005"
     }
   ],
   "feedback_history": [

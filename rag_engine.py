@@ -826,15 +826,19 @@ class RAGEngine:
         self.cache_stats["misses"] += 1
         
         # ========================================
-        # STAGE 1: Hybrid Search (Semantic + BM25)
+        # STAGE 1: v2.6 Multi-Query Retrieval
         # ========================================
         try:
-            hybrid_results = self._hybrid_search(question_expanded, k=30, alpha=0.7)
+            hybrid_results = self._multi_query_retrieval(question, k=30, alpha=0.7)
         except Exception as e:
-            print(f"  ⚠️ Hybrid search failed, falling back: {e}")
-            # Fallback to semantic only
-            hybrid_results = [(doc, score, "semantic") 
-                             for doc, score in self.vectorstore.similarity_search_with_score(question_expanded, k=30)]
+            print(f"  ⚠️ Multi-query retrieval failed, falling back to hybrid: {e}")
+            try:
+                hybrid_results = self._hybrid_search(question_expanded, k=30, alpha=0.7)
+            except Exception as e2:
+                print(f"  ⚠️ Hybrid search also failed: {e2}")
+                # Fallback to semantic only
+                hybrid_results = [(doc, score, "semantic") 
+                                 for doc, score in self.vectorstore.similarity_search_with_score(question_expanded, k=30)]
         
         # ========================================
         # STAGE 2: Cross-Encoder Neural Re-ranking
@@ -1127,6 +1131,98 @@ Instruksi: Cari jawaban di REFERENSI di atas. Jika ditemukan, jawab SINGKAT deng
                      'jika', 'bila', 'ketika', 'saat', 'agar', 'supaya', 'sehingga'}
         words = re.findall(r'\b[a-zA-Z]+\b', text.lower())
         return [w for w in words if w not in stopwords and len(w) > 2]
+
+    # ========================================
+    # v2.6: Multi-Query Retrieval for Higher Accuracy
+    # ========================================
+    
+    def _generate_query_variations(self, question):
+        """
+        v2.6: Generate multiple query variations for better retrieval.
+        Returns 3 variations: original expanded, rephrased, keyword-focused.
+        """
+        variations = []
+        q_lower = question.lower()
+        
+        # Variation 1: Original with synonym expansion (already done)
+        variations.append(self._apply_synonym_mapping(question))
+        
+        # Variation 2: Rephrased formal academic
+        rephrase_patterns = {
+            r'berapa lama': 'durasi waktu',
+            r'berapa': 'jumlah total',
+            r'apa saja': 'syarat ketentuan',
+            r'bagaimana': 'prosedur cara mekanisme',
+            r'kapan': 'jadwal tanggal waktu',
+            r'apa itu': 'definisi pengertian',
+            r'syarat': 'persyaratan ketentuan kriteria',
+            r'cara': 'prosedur langkah mekanisme',
+            r'biaya': 'tarif pembayaran nominal',
+        }
+        
+        rephrased = question
+        for pattern, replacement in rephrase_patterns.items():
+            if re.search(pattern, q_lower):
+                rephrased = re.sub(pattern, replacement, rephrased, flags=re.IGNORECASE)
+        
+        if rephrased != question:
+            variations.append(self._apply_synonym_mapping(rephrased))
+        
+        # Variation 3: Keyword extraction + context
+        keywords = self._extract_keywords(question)
+        if keywords:
+            # Add academic context keywords
+            context_additions = []
+            if any(k in ['lulus', 'kelulusan', 'wisuda', 'yudisium'] for k in keywords):
+                context_additions.extend(['predikat', 'IPK', 'SKS', 'syarat'])
+            if any(k in ['studi', 'kuliah', 'semester'] for k in keywords):
+                context_additions.extend(['beban', 'akademik', 'tahun'])
+            if any(k in ['cuti', 'izin', 'libur'] for k in keywords):
+                context_additions.extend(['akademik', 'prosedur', 'permohonan'])
+            if any(k in ['nilai', 'ipk', 'ips'] for k in keywords):
+                context_additions.extend(['huruf', 'mutu', 'prestasi'])
+                
+            keyword_query = ' '.join(keywords + context_additions[:4])
+            variations.append(keyword_query)
+        
+        # Ensure we have unique variations
+        unique_variations = list(dict.fromkeys(variations))
+        return unique_variations[:3]  # Max 3 variations
+    
+    def _multi_query_retrieval(self, question, k=30, alpha=0.7):
+        """
+        v2.6: Retrieve documents using multiple query variations.
+        Merges results from all variations and deduplicates.
+        """
+        query_variations = self._generate_query_variations(question)
+        print(f"  🔄 Multi-query retrieval with {len(query_variations)} variations")
+        
+        all_results = {}  # hash -> (doc, best_score, strategy)
+        
+        for i, query in enumerate(query_variations):
+            try:
+                results = self._hybrid_search(query, k=k, alpha=alpha)
+                
+                for doc, score, strategy in results:
+                    content_hash = hash(doc.page_content[:100])
+                    
+                    if content_hash not in all_results:
+                        all_results[content_hash] = (doc, score, strategy)
+                    else:
+                        # Keep the better score (lower is better in our normalized scheme)
+                        existing_score = all_results[content_hash][1]
+                        if score < existing_score:
+                            all_results[content_hash] = (doc, score, strategy)
+                            
+            except Exception as e:
+                print(f"  ⚠️ Query variation {i+1} failed: {e}")
+                continue
+        
+        # Sort by score and return top k
+        sorted_results = sorted(all_results.values(), key=lambda x: x[1])
+        print(f"  ✓ Retrieved {len(sorted_results)} unique documents from multi-query")
+        
+        return sorted_results[:k]
 
     def _extract_entities(self, text):
         """Extract important entities like numbers, dates, proper nouns"""
