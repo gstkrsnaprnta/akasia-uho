@@ -1074,7 +1074,7 @@ Instruksi: Cari jawaban di REFERENSI di atas. Jika ditemukan, jawab SINGKAT deng
 
     def _apply_synonym_mapping(self, question):
         """
-        v2.0: Expand abbreviations dan istilah untuk retrieval lebih baik.
+        v2.6: Expand abbreviations dan istilah untuk retrieval lebih baik.
         Menambahkan variasi kata kunci untuk meningkatkan kemungkinan match.
         """
         # Direct replacements
@@ -1084,9 +1084,10 @@ Instruksi: Cari jawaban di REFERENSI di atas. Jika ditemukan, jawab SINGKAT deng
             r'\bS3\b': 'S3 doktor program doktor',
             r'\bD3\b': 'D3 diploma tiga vokasi',
             r'\bD4\b': 'D4 diploma empat sarjana terapan',
-            r'\bKRS\b': 'KRS kartu rencana studi',
+            r'\bKRS\b': 'KRS kartu rencana studi pengisian',
             r'\bKHS\b': 'KHS kartu hasil studi',
-            r'\bUKT\b': 'UKT uang kuliah tunggal',
+            r'\bUKT\b': 'UKT uang kuliah tunggal SPP pembayaran',
+            r'\bSPP\b': 'SPP UKT uang kuliah tunggal pembayaran',
             r'\bIPK\b': 'IPK indeks prestasi kumulatif',
             r'\bIPS\b': 'IPS indeks prestasi semester',
             r'\bSKS\b': 'SKS satuan kredit semester',
@@ -1098,6 +1099,15 @@ Instruksi: Cari jawaban di REFERENSI di atas. Jika ditemukan, jawab SINGKAT deng
             r'\bcuti\b': 'cuti akademik izin tidak aktif',
             r'\bwisuda\b': 'wisuda kelulusan yudisium',
             r'\blulus\b': 'lulus kelulusan yudisium predikat',
+            # v2.6: Calendar/semester terms
+            r'\bgasal\b': 'gasal ganjil semester I',
+            r'\bgenap\b': 'genap semester II',
+            r'\bongoing\b': 'ongoing mahasiswa lama aktif',
+            r'\bbayar\b': 'bayar pembayaran registrasi',
+            r'\bpembayaran\b': 'pembayaran bayar registrasi UKT SPP',
+            r'\b2025\.1\b': '2025.1 semester gasal 2025',
+            r'\b2025\.2\b': '2025.2 semester genap 2026',
+            r'\b2025\.3\b': '2025.3 semester antara 2026',
         }
         result = question
         for pattern, replacement in mappings.items():
@@ -1114,7 +1124,10 @@ Instruksi: Cari jawaban di REFERENSI di atas. Jika ditemukan, jawab SINGKAT deng
         if 'nilai' in q_lower or 'ipk' in q_lower:
             additions.append('indeks prestasi huruf mutu')
         if 'jadwal' in q_lower or 'kapan' in q_lower:
-            additions.append('tanggal kalender akademik')
+            additions.append('tanggal kalender akademik jadwal')
+        # v2.6: Payment-related additions
+        if 'pembayaran' in q_lower or 'bayar' in q_lower or 'ukt' in q_lower or 'spp' in q_lower:
+            additions.append('registrasi mahasiswa ongoing')
             
         if additions:
             result = result + ' ' + ' '.join(additions)
