@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 93,
-  "last_query_at": "2026-01-05T21:29:22.739641",
+  "total_queries": 103,
+  "last_query_at": "2026-01-05T21:40:07.499165",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -335,6 +335,46 @@
     {
       "query": "Apa syarat kelulusan program S1?",
       "timestamp": "2026-01-05T21:29:22.739679"
+    },
+    {
+      "query": "Apa syarat magang/KKN?",
+      "timestamp": "2026-01-05T21:30:15.028661"
+    },
+    {
+      "query": "Apa syarat pindah jurusan?",
+      "timestamp": "2026-01-05T21:30:45.211988"
+    },
+    {
+      "query": "Kapan Ujian Akhir Semester (UAS) Semester Gasal 2025.1 dilaksanakan?",
+      "timestamp": "2026-01-05T21:32:10.802285"
+    },
+    {
+      "query": "Kapan pengumuman nilai mata kuliah Semester Gasal 2025.1?",
+      "timestamp": "2026-01-05T21:32:32.624456"
+    },
+    {
+      "query": "Kapan masa sanggah nilai mata kuliah Semester Gasal 2025.1?",
+      "timestamp": "2026-01-05T21:34:03.088553"
+    },
+    {
+      "query": "Kapan KKN Batch 1 tahun 2026 dilaksanakan?",
+      "timestamp": "2026-01-05T21:34:20.037687"
+    },
+    {
+      "query": "Kapan KKN Batch 1 2026 ?",
+      "timestamp": "2026-01-05T21:34:44.504953"
+    },
+    {
+      "query": "Kapan jadwal input nilai di siakad semester genap 2025.2",
+      "timestamp": "2026-01-05T21:36:26.173740"
+    },
+    {
+      "query": "Kapan jadwal input jadwal kuliah di SIAKAD untuk Semester Genap 2025.2?",
+      "timestamp": "2026-01-05T21:36:42.551237"
+    },
+    {
+      "query": "Apa syarat pindah jurusan?",
+      "timestamp": "2026-01-05T21:40:07.499202"
     }
   ],
   "feedback_history": [
