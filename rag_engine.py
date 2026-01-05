@@ -190,6 +190,27 @@ class RAGEngine:
                             boost = -4.0
                         break
                 
+                # v2.6: Semester date detection for calendar queries
+                # Gasal 2025.1 = Aug-Dec 2025 (dates like /08/2025, /09/2025, ... or /01/2026 for end)
+                # Genap 2025.2 = Feb-Jun 2026 (dates like /02/2026, /03/2026, ...)
+                # Antara 2025.3 = Jul-Aug 2026 (dates like /07/2026, /08/2026)
+                import re
+                if 'gasal' in query_lower or '2025.1' in query_lower:
+                    # Look for Gasal dates: Aug-Dec 2025
+                    gasal_dates = re.findall(r'/(?:0[789]|1[012])/2025|/01/2026', doc_content)
+                    genap_dates = re.findall(r'/0[2-6]/2026', doc_content)
+                    if gasal_dates and not genap_dates:
+                        boost += 4.0  # Correct semester
+                    elif genap_dates and not gasal_dates:
+                        boost -= 4.0  # Wrong semester
+                elif 'genap' in query_lower or '2025.2' in query_lower:
+                    gasal_dates = re.findall(r'/(?:0[789]|1[012])/2025', doc_content)
+                    genap_dates = re.findall(r'/0[2-6]/2026', doc_content)
+                    if genap_dates and not gasal_dates:
+                        boost += 4.0
+                    elif gasal_dates and not genap_dates:
+                        boost -= 4.0
+                
                 boosted_scores.append(float(score) + boost)
             
             # Combine with original docs

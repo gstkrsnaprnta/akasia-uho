@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 72,
-  "last_query_at": "2026-01-05T14:50:02.961725",
+  "total_queries": 77,
+  "last_query_at": "2026-01-05T14:57:41.763248",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -251,6 +251,26 @@
     {
       "query": "Berapa masa studi maksimal S1?",
       "timestamp": "2026-01-05T14:50:02.961777"
+    },
+    {
+      "query": "Kapan UTS semester gasal  2025.1",
+      "timestamp": "2026-01-05T14:53:12.938406"
+    },
+    {
+      "query": "Kapan pelaksanaan Pemira ?",
+      "timestamp": "2026-01-05T14:53:48.842135"
+    },
+    {
+      "query": "Kapan jadwal modifikasi KRS online untuk Semester Gasal 2025.1?",
+      "timestamp": "2026-01-05T14:56:59.631652"
+    },
+    {
+      "query": "Siapa PLT UHO ?",
+      "timestamp": "2026-01-05T14:57:29.875787"
+    },
+    {
+      "query": "PLT ",
+      "timestamp": "2026-01-05T14:57:41.763278"
     }
   ],
   "feedback_history": [
