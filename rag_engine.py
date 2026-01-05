@@ -962,9 +962,15 @@ Bantu mahasiswa dengan menjawab pertanyaan akademik berdasarkan informasi yang t
 
 CARA MENJAWAB:
 1. Cari informasi yang relevan dari konteks yang diberikan
-2. Jika menemukan, berikan jawaban dengan jelas dan ramah
-3. Sertakan sumber (Pasal/Kalender Akademik) di akhir jawaban
-4. Jawab dalam 1-3 kalimat yang mudah dipahami
+2. Jawab LANGSUNG tanpa kata pembuka seperti "Berdasarkan informasi..." atau "Saya menemukan bahwa..."
+3. Cukup berikan jawaban singkat + sumber di akhir
+4. Maksimal 2 kalimat saja
+
+CONTOH FORMAT JAWABAN YANG BENAR:
+"Masa studi maksimal S1 adalah 7 tahun akademik. [Sumber: Pasal 44]"
+
+FORMAT YANG SALAH (terlalu panjang):
+"Berdasarkan informasi yang tersedia, saya menemukan bahwa masa studi maksimal untuk Program Sarjana (S1) adalah... Jadi, jawaban untuk pertanyaan mahasiswa adalah..."
 
 PEMETAAN SEMESTER:
 - Semester Gasal 2025.1 = SEMESTER GASAL tahun 2025 (mulai Agustus 2025)
@@ -1183,8 +1189,8 @@ Instruksi: Bantu mahasiswa dengan menjawab pertanyaannya. Jika ada informasi yan
             r'\bUKT\b': 'UKT uang kuliah tunggal SPP pembayaran',
             r'\bSPP\b': 'SPP UKT uang kuliah tunggal pembayaran',
             r'\bIPK\b': 'IPK indeks prestasi kumulatif',
-            r'\bIPS\b': 'IPS indeks prestasi semester',
-            r'\bSKS\b': 'SKS satuan kredit semester',
+            r'\bIPS\b': 'IPS indeks prestasi semester beban studi sks Pasal 21',
+            r'\bSKS\b': 'SKS satuan kredit semester beban studi',
             r'\bUTS\b': 'UTS ujian tengah semester',
             r'\bUAS\b': 'UAS ujian akhir semester',
             r'\bKKN\b': 'KKN kuliah kerja nyata',

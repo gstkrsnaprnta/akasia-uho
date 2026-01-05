@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 110,
-  "last_query_at": "2026-01-05T21:49:29.093262",
+  "total_queries": 123,
+  "last_query_at": "2026-01-05T22:04:13.351909",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -403,6 +403,58 @@
     {
       "query": "Jika IPS mahasiswa 1,90, berapa SKS maksimalnya?",
       "timestamp": "2026-01-05T21:49:29.093316"
+    },
+    {
+      "query": "Tuliskan rumus Nilai Akhir (NA) untuk mata kuliah tanpa praktikum",
+      "timestamp": "2026-01-05T21:50:57.807264"
+    },
+    {
+      "query": "Apa saja komponen penilaian dalam rumus NA mata kuliah praktikum?",
+      "timestamp": "2026-01-05T21:51:36.688477"
+    },
+    {
+      "query": "Berapa menit kegiatan tatap muka untuk 1 SKS perkuliahan?",
+      "timestamp": "2026-01-05T21:51:56.827385"
+    },
+    {
+      "query": "Berapa menit kegiatan mandiri untuk 1 SKS perkuliahan?",
+      "timestamp": "2026-01-05T21:53:04.044090"
+    },
+    {
+      "query": "Berapa menit kegiatan praktikum untuk 1 SKS?",
+      "timestamp": "2026-01-05T21:53:25.922149"
+    },
+    {
+      "query": "Berapa minimal kehadiran mahasiswa untuk boleh ikut ujian akhir semester?",
+      "timestamp": "2026-01-05T21:53:58.491752"
+    },
+    {
+      "query": "Berapa beban studi minimal untuk Program Diploma 3?",
+      "timestamp": "2026-01-05T21:54:37.280204"
+    },
+    {
+      "query": "Berapa lama masa studi maksimal untuk Program Diploma 3?",
+      "timestamp": "2026-01-05T21:55:00.702231"
+    },
+    {
+      "query": "Berapa beban studi minimal untuk Program Sarjana (S1)?",
+      "timestamp": "2026-01-05T21:55:36.906104"
+    },
+    {
+      "query": "Berapa batas masa studi maksimal untuk Program Sarjana (S1)?",
+      "timestamp": "2026-01-05T21:58:50.493520"
+    },
+    {
+      "query": "Berapa beban studi minimal untuk Program Profesi?",
+      "timestamp": "2026-01-05T21:59:20.264196"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-05T22:03:50.223951"
+    },
+    {
+      "query": "Jika IPS mahasiswa 3,15, berapa SKS maksimal yang dapat diprogramkan semester berikutnya?",
+      "timestamp": "2026-01-05T22:04:13.351941"
     }
   ],
   "feedback_history": [
