@@ -17,8 +17,8 @@
       "chunks_count": 259
     }
   ],
-  "total_queries": 123,
-  "last_query_at": "2026-01-05T22:04:13.351909",
+  "total_queries": 131,
+  "last_query_at": "2026-01-06T08:42:08.406007",
   "query_history": [
     {
       "query": "Berapa beban studi minimal (dalam SKS) untuk Program Diploma 3 (D3)?",
@@ -455,6 +455,38 @@
     {
       "query": "Jika IPS mahasiswa 3,15, berapa SKS maksimal yang dapat diprogramkan semester berikutnya?",
       "timestamp": "2026-01-05T22:04:13.351941"
+    },
+    {
+      "query": "Siapa rektor UHO ?",
+      "timestamp": "2026-01-06T08:17:43.227198"
+    },
+    {
+      "query": "rektor UHO",
+      "timestamp": "2026-01-06T08:18:03.418064"
+    },
+    {
+      "query": "PLT uho",
+      "timestamp": "2026-01-06T08:18:14.577539"
+    },
+    {
+      "query": "PLT",
+      "timestamp": "2026-01-06T08:18:27.803747"
+    },
+    {
+      "query": "Siapa yang bisa dihubungi untuk konsultasi akademik?",
+      "timestamp": "2026-01-06T08:19:14.845869"
+    },
+    {
+      "query": "Berapa masa studi maksimal S1?",
+      "timestamp": "2026-01-06T08:41:44.136788"
+    },
+    {
+      "query": "Bagaimana prosedur cuti akademik?",
+      "timestamp": "2026-01-06T08:41:56.409285"
+    },
+    {
+      "query": "Apa syarat kelulusan cum laude?",
+      "timestamp": "2026-01-06T08:42:08.406099"
     }
   ],
   "feedback_history": [

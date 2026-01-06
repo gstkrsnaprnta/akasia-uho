@@ -41,17 +41,17 @@ class RAGEngine:
         self.vectorstore = self.load_existing_vectorstore()
         self.client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
         self.llm_model = "llama-3.1-8b-instant"
-        self.fallback_model = "llama-3.2-3b-preview"
+        self.fallback_model = "llama-3.3-70b-versatile"
         self.metadata = self.load_metadata()
         
-        # v2.1: Initialize BM25 index and cross-encoder
+        # Initialize BM25 index and cross-encoder
         self.bm25_index = None
         self.bm25_corpus = []
         self.cross_encoder = None
         self._init_cross_encoder()
         self._build_bm25_index()
         
-        # v2.3: Response caching for instant responses
+        # Response caching for instant responses
         self.response_cache = {}  # query_hash -> {response, citations, confidence, timestamp}
         self.cache_max_size = 100  # Max cached responses
         self.cache_ttl = 3600  # Cache time-to-live in seconds (1 hour)
@@ -68,7 +68,7 @@ class RAGEngine:
         )
     
     # ========================================
-    # v2.1: BM25 Index for Hybrid Search
+    # BM25 Index for Hybrid Search
     # ========================================
     
     def _build_bm25_index(self):
@@ -108,7 +108,7 @@ class RAGEngine:
         return [t for t in tokens if len(t) > 2]
     
     def _bm25_search(self, query, k=20):
-        """Search using BM25 keyword matching"""
+        """Search using BM25 keyword matching""" 
         if not self.bm25_index or not self.bm25_corpus:
             return []
         
@@ -126,7 +126,7 @@ class RAGEngine:
         return results
     
     # ========================================
-    # v2.1: Cross-Encoder Re-ranking
+    # Cross-Encoder Re-ranking
     # ========================================
     
     def _init_cross_encoder(self):
@@ -145,7 +145,7 @@ class RAGEngine:
     
     def _cross_encoder_rerank(self, query, docs, top_k=10):
         """
-        v2.6: Re-rank documents using cross-encoder neural model
+        Re-rank documents using cross-encoder neural model
         with query-aware term boosting for S1/S2/S3/D3/D4 mappings
         """
         if not self.cross_encoder or not docs:
@@ -158,7 +158,7 @@ class RAGEngine:
             # Get cross-encoder scores
             scores = self.cross_encoder.predict(pairs)
             
-            # v2.6: Query-aware term boosting
+            # Query-aware term boosting
             query_lower = query.lower()
             boost_mappings = {
                 's1': {'match': ['program sarjana', 'sarjana'], 'exclude': ['magister', 'doktor']},
@@ -190,7 +190,7 @@ class RAGEngine:
                             boost = -4.0
                         break
                 
-                # v2.6: Semester date detection for calendar queries
+                # Semester date detection for calendar queries
                 # Gasal 2025.1 = Aug-Dec 2025 (dates with /08/2025 - /12/2025 or /01/2026)
                 # Genap 2025.2 = Feb-Jun 2026 (dates with /02/2026 - /06/2026)
                 import re
@@ -242,7 +242,7 @@ class RAGEngine:
             return [(d, s, st, 0.5) for d, s, st in docs[:top_k]]
     
     # ========================================
-    # v2.1: Hybrid Search (Semantic + BM25)
+    # Hybrid Search (Semantic + BM25)
     # ========================================
     
     def _hybrid_search(self, query, k=30, alpha=0.7):
